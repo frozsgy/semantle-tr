@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Semantle</title>
+    <script src="assets/js/secretWords.js"></script>
+    <script src="assets/js/semantle.js"></script>
+  </head>
+  <body>
+    <h2>Semantle</h2>
+    
+    <h3>Guess the word</h3>
+    <p>
+      Each guess must be a word (of any length).  The similarity value
+      is how similar word2vec thinks your word is to the secret word.
+      The highest possible similarity is 100 (indicating that the
+      words are identical and you have won).  You will need more than
+      six guesses.  You will probably need dozens of guesses.
+      <b>There's a new word every day</b>
+    </p>
+    <p>
+      Words may be any part of speech.  It's tempting to think only of
+      nouns, since that is how normal semantic word-guessing games
+      work.  Don't get caught in the trap!  Since our Word2Vec data
+      set contains some proper nouns, guesses are case-sensitive.  But
+      I removed all but lower-case words from the secret word set, and
+      if your word matches the secret word but for case, you win
+      anyway.  So if you want to know if the word is more like nice
+      or <a href="https://en.wikipedia.org/wiki/Nice">Nice</a>, you
+      can ask about both.
+    </p>
+    <p>
+      <a href="http://www.topped-with-meat.com/connector/frenchtoast.html">Prior
+      art</a>. I discovered French Toast about 20 years ago, and
+      immediately knew that I had to
+      tell <a href="https://blog.plover.com/">Dominus</a> about it.
+      He replied that in fact he
+      and <a href="https://moonmilk.com/">Ranjit</a> had invented it
+      ten or so years before that, and called it "Plenty Questions".</p>
+<p>
+      But I wasn't thinking of French Toast when I invented this.
+      Instead, I was thinking
+      about <a href="https://www.powerlanguage.co.uk/wordle/">Wordle</a>
+      and <a href="https://worldle.teuteuf.fr/">Worldle</a> and about
+      the dimensionality of data sets.  I considered Filmle, a movie
+      guessing game: You say "The Matrix", it says "Keanu Reeves has a
+      bacon number of 3 where bacon is the lead actor in the target
+      film." (and so on for Carrie-Ann Moss, Laurence Fishburne, and
+      Hugo Weaving for actors at corresponding billings).  But I don't
+      care about movies.  Too bad,
+      because <a href="https://www.imdb.com/interfaces/">IMDB</a>
+      actually has exactly the data that you would need to implement
+      it in a really easy form.  Then I remembered word2vec, and here
+      we are.
+      </p>
+    <div id="error" style="color:#ff0000"></div>
+    <form id="form">
+    <input placeholder="Guess" autocorrect="off" autocapitalize="none"
+           autocomplete="off"
+           type="text" id="guess">
+    <input type="submit" value="Guess" id="guess-btn">
+    <input type="button" value="Give up" id="give-up-btn">
+    </form>
+    <div id="response"></div>
+    <table id="guesses">
+    </table>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div>Made by <a href="mailto:novalis@novalis.org">David Turner</a>.  Word2vec data from Google.</div>
+  </body>
+</html>
