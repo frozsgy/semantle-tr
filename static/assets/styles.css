@@ -1,3 +1,11 @@
 th {
     padding-right: 3em;
 }
+
+.gaveup {
+    border: 1px solid black;
+    padding-top: 0.7ex;
+    padding-bottom: 0.7ex;
+    padding-left: 0.7em;
+    background-color: #eeeeff;
+}

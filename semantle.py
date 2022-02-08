@@ -8,6 +8,10 @@ app = Flask(__name__)
 def send_index():
     return send_file('static/index.html' )
 
+@app.route('/favicon.ico')
+def send_favicon():
+    return send_file('static/assets/favicon.ico' )
+
 @app.route('/assets/<path:path>')
 def send_static(path):
     return send_from_directory('static/assets', path)
