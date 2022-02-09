@@ -13,3 +13,24 @@ th {
 .close {
     text-align: right;
 }
+
+@media only screen and (hover: none) {
+abbr::after {
+  content: "Unusual word found!  This word is not in the list of \"normal\" words that we use for the top-1000 list, but it is still similar!";
+  padding: 2px;
+  display: none;
+  position: relative;
+  top: -20px;
+  right: -30px;
+  width: 150px;
+  text-align: center;
+  border: 1px solid black;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -ms-border-radius: 2px;
+  border-radius: 2px;
+}
+abbr:hover::after {
+  display: block;
+}
+}
