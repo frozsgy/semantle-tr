@@ -58,6 +58,7 @@ const words_selected = [];
 const cache = [];
 let secret = "";
 let secretVec = null;
+let similarityStory = null;
 
 function select(word, secretVec) {
     /*
@@ -106,7 +107,7 @@ let Semantle = (function() {
     }
 
     async function getModel(word) {
-        if (word in cache) {
+        if (cache.hasOwnProperty(word)) {
             return cache[word];
         }
         const url = "/model2/" + secret + "/" + word.replaceAll(" ", "_");
@@ -122,8 +123,8 @@ let Semantle = (function() {
         secret = secretWords[puzzleNumber].toLowerCase();
 
         try {
-        const similarityStory = await getSimilarityStory(secret);
-        $('#similarity-story').innerHTML = `
+            similarityStory = await getSimilarityStory(secret);
+            $('#similarity-story').innerHTML = `
 For today's secret word, the nearest word has a similarity of
 <b>${(similarityStory.top * 100).toFixed(2)}</b>, the tenth-nearest has a similarity of
 ${(similarityStory.top10 * 100).toFixed(2)} and the one thousandth nearest word has a
@@ -197,40 +198,6 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             if (winState != -1) {
                 endGame(winState);
             }
-        } else {
-
-            // obsolete code -- this has been replaced by localstorage
-            document.cookie="gameOver=0;expires=Thu, 01 Jan 1970 00:00:01 GMT;SameSite=Strict";
-            const cookie = document.cookie;
-            if (cookie && puzzleNumber <= 6) {
-                let parts = cookie.split("=");
-                parts = parts[1].split(",");
-                const puzzle = parseInt(parts[0]);
-                const outcome = parseInt(parts[1]);
-                if (puzzle === puzzleNumber) {
-                    if (outcome >= 0) {
-                        endGame(outcome);
-                    }
-                    if (parts.length > 1) {
-                        const soFar = parts[2].split("!");
-                        for (let word of soFar) {
-                            let parts = word.split("*");
-                            let similarity = parseFloat(parts[0]);
-                            if (similarity === 0) {
-                                continue;
-                            }
-                            word = parts[1];
-                            guesses.push([similarity, word]);
-                            guessed.add(word);
-                            guessCount += 1;
-                        }
-                        updateGuesses(null);
-                    }
-                    if (parts.length > 2) {
-                        guessCount = parseInt(parts[3]);
-                    }
-                }
-            }
         }
     }
 
@@ -242,6 +209,10 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             let percentileText = "(cold)";
             let percentile = entry[2];
             let progress = "";
+            console.log(similarity, similarityStory.rest * 100);
+            if (similarity >= similarityStory.rest * 100) {
+                percentileText = '<abbr title="Secret word found!  This word is not in the list of &quot;normal&quot; words that we use for the top-1000 list, but it is still similar!">????</abbr>';
+            }
             if (percentile) {
                 if (percentile == 1000) {
                     percentileText = "FOUND!";
@@ -266,27 +237,11 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
 
     function saveGame(winState) {
-        storage.setItem("winState", winState);
-        storage.setItem("guesses", JSON.stringify(guesses));
-    }
-
-    function setCookie(winState) {
-        /* old cookie code, will delete eventually */
-        let cookie = `s=${puzzleNumber},${winState},`;
-        let gc = `,${guessCount}`;
-        let cookieTrailer = ";SameSite=strict";
-        for (const guess of guesses) {
-            let similarity = guess[0];
-            let word = guess[1];
-            if (cookie.length + word.length + cookieTrailer.length + gc.length >= 4085) {
-                break;
-            }
-            cookie += similarity + "*" + word + "!";
+        let oldState = storage.getItem("winState");
+        if (oldState == -1 || oldState == null) {
+            storage.setItem("winState", winState);
+            storage.setItem("guesses", JSON.stringify(guesses));
         }
-        if (guesses.length == 0) {
-            cookie += "0*placeholder!"
-        }
-        document.cookie = cookie.substring(0, cookie.length - 1) + gc + cookieTrailer;
     }
 
     function endGame(guessCount) {
@@ -298,7 +253,6 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
         } else {
             $('#response').innerHTML = `<b>You gave up!  The secret word is: ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words.`;
         }
-        setCookie(guessCount);
         saveGame(guessCount);
     }
 
