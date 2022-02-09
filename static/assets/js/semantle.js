@@ -209,7 +209,6 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             let percentileText = "(cold)";
             let percentile = entry[2];
             let progress = "";
-            console.log(similarity, similarityStory.rest * 100);
             if (similarity >= similarityStory.rest * 100) {
                 percentileText = '<abbr title="Secret word found!  This word is not in the list of &quot;normal&quot; words that we use for the top-1000 list, but it is still similar!">????</abbr>';
             }
