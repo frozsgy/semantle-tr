@@ -9,3 +9,7 @@ th {
     padding-left: 0.7em;
     background-color: #eeeeff;
 }
+
+.close {
+    text-align: right;
+}

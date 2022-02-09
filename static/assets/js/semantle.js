@@ -209,6 +209,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             let percentileText = "(cold)";
             let percentile = entry[2];
             let progress = "";
+            let cls = "";
             if (similarity >= similarityStory.rest * 100) {
                 percentileText = '<abbr title="Secret word found!  This word is not in the list of &quot;normal&quot; words that we use for the top-1000 list, but it is still similar!">????</abbr>';
             }
@@ -216,7 +217,8 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
                 if (percentile == 1000) {
                     percentileText = "FOUND!";
                 } else {
-                    percentileText = `${percentile}/1000`;
+                    cls="close";
+                    percentileText = `${percentile}/1000 &nbsp;`;
                     progress = ` <span style="display:inline-block;width:10em;height:1ex; padding-bottom:1ex; background-color:#eeeeee;">
 <span style="background-color:#008000; width:${percentile/10}%; display:inline-block">&nbsp;</span>
 </span>`;
@@ -228,7 +230,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             } else {
                 color = '#000000';
             }
-            inner += `<tr><td style="color:${color}" onclick="select('${oldGuess}', secretVec);">${oldGuess}</td><td>${similarity.toFixed(2)}</td><td>${percentileText}${progress}
+            inner += `<tr><td style="color:${color}" onclick="select('${oldGuess}', secretVec);">${oldGuess}</td><td>${similarity.toFixed(2)}</td><td class="${cls}">${percentileText}${progress}
 </td></tr>`;
         }
         $('#guesses').innerHTML = inner;
