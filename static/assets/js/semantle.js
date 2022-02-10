@@ -137,6 +137,7 @@ let Semantle = (function() {
     const today = Math.floor(now / 86400000);
     const initialDay = 19021;
     const puzzleNumber = (today - initialDay) % secretWords.length;
+    const yesterdayPuzzleNumber = (today - initialDay + secretWords.length - 1) % secretWords.length;
     const storage = window.localStorage;
 
     async function getSimilarityStory(secret) {
@@ -164,6 +165,9 @@ let Semantle = (function() {
 
     async function init() {
         secret = secretWords[puzzleNumber].toLowerCase();
+        const yesterday = secretWords[yesterdayPuzzleNumber].toLowerCase();
+
+        $('#yesterday').innerHTML = `Yesterday's word was <b>"${yesterday}"</b>.`;
 
         try {
             similarityStory = await getSimilarityStory(secret);
@@ -280,7 +284,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
     }
 
     function endGame(guessCount) {
-        $('#give-up-btn').style="display:none;";
+        $('#give-up-btn').style = "display:none;";
         $('#response').classList.add("gaveup");
         gameOver = true;
         if (guessCount > 0) {
