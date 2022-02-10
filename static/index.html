@@ -5,6 +5,7 @@
     <title>Semantle</title>
     <script src="assets/js/secretWords.js"></script>
     <script src="assets/js/semantle.js"></script>
+    <script src="assets/js/clipboard.js"></script>
     <link rel="stylesheet" href="assets/styles.css">
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
@@ -13,11 +14,13 @@
   <body>
     <h2>Semantle</h2>
     
-    <h3>Guess the word</h3>
+    <h3>Guess the secret word</h3>
     <p>
       Each guess must be a word (of any length) or short phrase.  The
-      similarity value is how similar Word2vec thinks your word is to
-      the secret word.  The highest possible similarity is 100
+      game will tell you how semantically similar it thinks your word
+      is to the secret word.  Unlike that other word game, it's not
+      about the spelling; it's about the meaning. The similarity value
+      comes from Word2vec.  The highest possible similarity is 100
       (indicating that the words are identical and you have won).
     </p>
     <p id="similarity-story"> </p>
@@ -81,6 +84,9 @@
     <input type="button" value="Give up" id="give-up-btn">
     </form>
     <div id="response"></div>
+    <div style="display:none">
+      <input type="text" id="share"></input>
+    </div>
     <div id="project" style="float:right"></div>
     <table id="guesses">
     </table>

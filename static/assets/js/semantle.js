@@ -54,6 +54,19 @@ function project_along(v1, v2, t) {
     return num/denom;
 }
 
+function share() {
+
+    const text = $('#share').value;
+    const copied = ClipboardJS.copy(text);
+
+    if (copied) {
+        alert("Copied to clipboard");
+    }
+    else {
+        alert("Failed to copy to clipboard");
+    }
+}
+
 const words_selected = [];
 const cache = [];
 let secret = "";
@@ -250,7 +263,8 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
         $('#response').classList.add("gaveup");
         gameOver = true;
         if (guessCount > 0) {
-            $('#response').innerHTML = `<b>You found it in ${guessCount}!  The secret word is ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words. <a href="javascript:navigator.clipboard.writeText('I solved Semantle #${puzzleNumber} in ${guessCount} guesses.  https://semantle.novalis.org/');alert('Copied results to clipboard');">Share</a> and play again tomorrow.`
+            $('#response').innerHTML = `<b>You found it in ${guessCount}!  The secret word is ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words. <a href="javascript:share();">Share</a> and play again tomorrow.`
+            $('#share').value = `I solved Semantle #${puzzleNumber} in ${guessCount} guesses.  https://semantle.novalis.org/`
         } else {
             $('#response').innerHTML = `<b>You gave up!  The secret word is: ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words.`;
         }
