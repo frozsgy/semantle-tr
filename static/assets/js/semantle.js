@@ -72,6 +72,7 @@ const cache = [];
 let secret = "";
 let secretVec = null;
 let similarityStory = null;
+let featureGuessNumber = true;
 
 function select(word, secretVec) {
     /*
@@ -92,6 +93,35 @@ function select(word, secretVec) {
                                target);
     console.log(proj);
 */
+}
+
+function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
+    let percentileText = "(cold)";
+    let progress = "";
+    let cls = "";
+    if (similarity >= similarityStory.rest * 100) {
+        percentileText = '<abbr title="Unusual word found!  This word is not in the list of &quot;normal&quot; words that we use for the top-1000 list, but it is still similar!">????</abbr>';
+    }
+    if (percentile) {
+        if (percentile == 1000) {
+            percentileText = "FOUND!";
+        } else {
+            cls = "close";
+            percentileText = `${percentile}/1000 &nbsp;`;
+            progress = ` <span style="display:inline-block;width:10em;height:1ex; padding-bottom:1ex; background-color:#eeeeee;">
+<span style="background-color:#008000; width:${percentile/10}%; display:inline-block">&nbsp;</span>
+</span>`;
+        }
+    }
+    let color;
+    if (oldGuess === guess) {
+        color = '#cc00cc';
+    } else {
+        color = '#000000';
+    }
+    const guessNumberTd = featureGuessNumber ? `<td>${guessNumber}</td>` : "";
+    return `<tr>${guessNumberTd}<td style="color:${color}" onclick="select('${oldGuess}', secretVec);">${oldGuess}</td><td>${similarity.toFixed(2)}</td><td class="${cls}">${percentileText}${progress}
+</td></tr>`;
 }
 
 let Semantle = (function() {
@@ -148,9 +178,13 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
         }
 
         const storagePuzzleNumber = storage.getItem("puzzleNumber");
+        if (storagePuzzleNumber != null) {
+            featureGuessNumber = false;
+        }
         if (storagePuzzleNumber != puzzleNumber) {
             storage.clear();
             storage.setItem("puzzleNumber", puzzleNumber);
+            featureGuessNumber = true;
         }
 
         $('#give-up-btn').addEventListener('click', function(event) {
@@ -166,13 +200,13 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             if (secretVec === null) {
                 secretVec = (await getModel(secret)).vec;
             }
-            $('#error').innerHTML = "";
+            $('#error').textContent = "";
             const guess = $('#guess').value.trim().replace("!", "").replace("*", "");
             $('#guess').value = "";
 
             const guessData = await getModel(guess);
             if (!guessData) {
-                $('#error').innerHTML = `I don't know the word ${guess}.`;
+                $('#error').textContent = `I don't know the word ${guess}.`;
                 return false;
             }
 
@@ -183,11 +217,12 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             cache[guess] = guessData;
 
             let similarity = getCosSim(guessVec, secretVec) * 100.0;
-            let newEntry = [similarity, guess, percentile];
             if (!guessed.has(guess)) {
-                guessed.add(guess);
-                guesses.push(newEntry);
                 guessCount += 1;
+                guessed.add(guess);
+
+                const newEntry = [similarity, guess, percentile, guessCount];
+                guesses.push(newEntry);
             }
             guesses.sort(function(a, b){return b[0]-a[0]});
             saveGame(-1);
@@ -207,6 +242,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             for (let guess of guesses) {
                 guessed.add(guess[1]);
             }
+            guessCount = guessed.size;
             updateGuesses("");
             if (winState != -1) {
                 endGame(winState);
@@ -215,36 +251,21 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
     }
 
     function updateGuesses(guess) {
-        let inner = `<tr><th>Guess</th><th>Similarity</th><th>Getting close?</th></tr>`;
+        let inner = `<tr>${featureGuessNumber ? "<th>#</th>" : ""}<th>Guess</th><th>Similarity</th><th>Getting close?</th></tr>`;
+        /* This is dumb: first we find the most-recent word, and put
+           it at the top.  Then we do the rest. */
         for (let entry of guesses) {
-            let oldGuess = entry[1];
-            let similarity = entry[0];
-            let percentileText = "(cold)";
-            let percentile = entry[2];
-            let progress = "";
-            let cls = "";
-            if (similarity >= similarityStory.rest * 100) {
-                percentileText = '<abbr title="Unusual word found!  This word is not in the list of &quot;normal&quot; words that we use for the top-1000 list, but it is still similar!">????</abbr>';
+            let [similarity, oldGuess, percentile, guessNumber] = entry;
+            if (oldGuess == guess) {
+                inner += guessRow(similarity, oldGuess, percentile, guessNumber, guess);
             }
-            if (percentile) {
-                if (percentile == 1000) {
-                    percentileText = "FOUND!";
-                } else {
-                    cls="close";
-                    percentileText = `${percentile}/1000 &nbsp;`;
-                    progress = ` <span style="display:inline-block;width:10em;height:1ex; padding-bottom:1ex; background-color:#eeeeee;">
-<span style="background-color:#008000; width:${percentile/10}%; display:inline-block">&nbsp;</span>
-</span>`;
-                }
+        }
+
+        for (let entry of guesses) {
+            let [similarity, oldGuess, percentile, guessNumber] = entry;
+            if (oldGuess != guess) {
+                inner += guessRow(similarity, oldGuess, percentile, guessNumber);
             }
-            let color;
-            if (oldGuess === guess) {
-                color = '#cc00cc';
-            } else {
-                color = '#000000';
-            }
-            inner += `<tr><td style="color:${color}" onclick="select('${oldGuess}', secretVec);">${oldGuess}</td><td>${similarity.toFixed(2)}</td><td class="${cls}">${percentileText}${progress}
-</td></tr>`;
         }
         $('#guesses').innerHTML = inner;
     }

@@ -51,6 +51,30 @@
       or <a href="https://en.wikipedia.org/wiki/Nice">Nice</a>, you
       can ask about both.
     </p>
+    <div id="error" style="color:#ff0000"></div>
+    <form id="form" autocorrect="off" autocapitalize="none"
+           autocomplete="off">
+    <input placeholder="Guess" autocorrect="off" autocapitalize="none"
+           autocomplete="off"
+           type="text" id="guess">
+    <input type="submit" value="Guess" id="guess-btn">
+    <input type="button" value="Give up" id="give-up-btn">
+    </form>
+    <div id="response"></div>
+    <div style="display:none">
+      <input type="text" id="share"></input>
+    </div>
+    <div id="project" style="float:right"></div>
+    <table id="guesses">
+    </table>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
     <p>
       <a href="http://www.topped-with-meat.com/connector/frenchtoast.html">Prior
       art</a>. I discovered French Toast about 20 years ago, and
@@ -78,29 +102,6 @@
       it in a really easy form.  Then I remembered word2vec, and here
       we are.
       </p>
-    <div id="error" style="color:#ff0000"></div>
-    <form id="form">
-    <input placeholder="Guess" autocorrect="off" autocapitalize="none"
-           autocomplete="off"
-           type="text" id="guess">
-    <input type="submit" value="Guess" id="guess-btn">
-    <input type="button" value="Give up" id="give-up-btn">
-    </form>
-    <div id="response"></div>
-    <div style="display:none">
-      <input type="text" id="share"></input>
-    </div>
-    <div id="project" style="float:right"></div>
-    <table id="guesses">
-    </table>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
     <div>Made by <a href="mailto:novalis@novalis.org">David Turner</a>.  Word2vec data from Google.</div>
   </body>
 </html>
