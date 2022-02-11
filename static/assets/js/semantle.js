@@ -258,7 +258,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
                 inner += guessRow(similarity, oldGuess, percentile, guessNumber, guess);
             }
         }
-
+        inner += "<tr><td colspan=4><hr></td></tr>";
         for (let entry of guesses) {
             let [similarity, oldGuess, percentile, guessNumber] = entry;
             if (oldGuess != guess) {
