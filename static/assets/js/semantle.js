@@ -68,7 +68,7 @@ function share() {
 }
 
 const words_selected = [];
-const cache = [];
+const cache = {};
 let secret = "";
 let secretVec = null;
 let similarityStory = null;
