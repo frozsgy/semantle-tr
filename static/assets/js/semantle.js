@@ -200,6 +200,10 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             }
             $('#error').textContent = "";
             const guess = $('#guess').value.trim().replace("!", "").replace("*", "");
+            if (!guess) {
+                return false;
+            }
+
             $('#guess').value = "";
 
             const guessData = await getModel(guess);
