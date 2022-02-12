@@ -40,7 +40,7 @@ function minus(v1, v2) {
 
 function scale (v, s) {
     const out = [];
-    for (let i = 0; i < v1.length; i++) {
+    for (let i = 0; i < v.length; i++) {
         out.push(v[i] * s);
     }
     return out;
