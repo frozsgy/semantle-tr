@@ -120,6 +120,14 @@ function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
     }
     return `<tr><td>${guessNumber}</td><td style="color:${color}" onclick="select('${oldGuess}', secretVec);">${oldGuess}</td><td>${similarity.toFixed(2)}</td><td class="${cls}">${percentileText}${progress}
 </td></tr>`;
+
+}
+
+function updateLocalTime() {
+    const now = new Date();
+    now.setUTCHours(24, 0, 0, 0);
+
+    $('#localtime').innerHTML = `or ${now.getHours()}:00 your time`;
 }
 
 let Semantle = (function() {
@@ -166,6 +174,7 @@ let Semantle = (function() {
         const yesterday = secretWords[yesterdayPuzzleNumber].toLowerCase();
 
         $('#yesterday').innerHTML = `Yesterday's word was <b>"${yesterday}"</b>.`;
+        updateLocalTime();
 
         try {
             similarityStory = await getSimilarityStory(secret);
