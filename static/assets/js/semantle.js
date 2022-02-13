@@ -145,6 +145,8 @@ let Semantle = (function() {
     const puzzleNumber = (today - initialDay) % secretWords.length;
     const yesterdayPuzzleNumber = (today - initialDay + secretWords.length - 1) % secretWords.length;
     const storage = window.localStorage;
+    let caps = 0;
+    let warnedCaps = 0;
 
     async function getSimilarityStory(secret) {
         const url = "/similarity/" + secret;
@@ -208,9 +210,20 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
                 secretVec = (await getModel(secret)).vec;
             }
             $('#error').textContent = "";
-            const guess = $('#guess').value.trim().replace("!", "").replace("*", "");
+            let guess = $('#guess').value.trim().replace("!", "").replace("*", "");
             if (!guess) {
                 return false;
+            }
+            if ($("#lower").checked) {
+                guess = guess.toLowerCase();
+            }
+
+            if (guess[0].toLowerCase() != guess[0]) {
+                caps += 1;
+            }
+            if (caps >= 2 && (caps / guesses.length) > 0.4 && !warnedCaps) {
+                warnedCaps = true;
+                $("#lower").checked = confirm("You're entering a lot of words with initial capital letters.  This is probably not what you want to do, and it's probably caused by your phone keyboard ignoring the autocapitalize setting.  \"Nice\" is a city. \"nice\" is an adjective.  Do you want me to downcase your guesses for you?");
             }
 
             $('#guess').value = "";
