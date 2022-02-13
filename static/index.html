@@ -64,7 +64,7 @@
     </form>
     <div id="response"></div>
     <div style="display:none">
-      <input type="text" id="share"></input>
+      <input type="text" id="share" />
     </div>
     <table id="guesses">
     </table>
@@ -80,31 +80,33 @@
 <h3>FAQ</h3>
 
     <p> Q: Why is the similarity so different from what I was expecting?</p>
-    <p> A: I can think of at least three reasons for this.
-      <ol>
-        <li>Your word, or the target word, is polysemous, and the
-          meanings that are close are rarely used. This is why "leather"
-          is far from "patent."</li>
-        <li>You capitalized your word.  SmartKey and some other
-          keyboards stupidly ignore the autocapitalize settings that I
-          have explicitly set in the HTML, and there does not seem to
-          be anything I can do about this.  I added a checkbox to help
-          you avoid this.</li>
-        <li>Your word and the target word are different parts of speech.
-          Sometimes this matters a lot.  Sometimes it matters only a
-          little.</li>
-      </ol>
-    </p>
+    <p> A: I can think of at least three reasons for this. </p>
+    <ol>
+      <li>Your guess, or the target word, is polysemous, and the
+        meaning that is similar is rarely used. This is why "leather"
+        is far from "patent."  Sometimes one usage is simply more
+        popular (among newspaper reporters, which is the corpus):
+        "display" is more often a verb than a noun, and its vector
+        reflects this.</li>
+      <li>You capitalized your word.  SmartKey and some other
+        keyboards stupidly ignore the autocapitalize settings that I
+        have explicitly set in the HTML, and there does not seem to
+        be anything I can do about this.  I added a checkbox to help
+        you avoid this.</li>
+      <li>Your word and the target word are different parts of speech.
+        Sometimes this matters a lot.  Sometimes it matters only a
+        little.</li>
+    </ol>
 
     <p> Q: Can I play more than once per day? </p>
-    <p> A: No.  There are three reasons for this:
+    <p> A: No.  There are three reasons for this:</p>
       <ol>
         <li>Slavish imitation of that other word guessing game.</li>
         <li>A game designer I know found a site that let you play as much of the other game as you want.  He immediately binged, and then got bored, and hasn't tweeted about it since.</li>
-        <li>. Another friend of mine said that she considered giving up on one day's Semantle, and then realized it would be another 24 hours before she could try again.  So she persevered and got it.</li>
+        <li>Another friend of mine said that she considered giving up on one day's Semantle, and then realized it would be another 24 hours before she could try again.  So she persevered and got it.</li>
       </ol>
 
-      <p> Q: How did you come up with this?</p>
+    <p> Q: How did you come up with this?</p>
     <p>
       A:
       <a href="http://www.topped-with-meat.com/connector/frenchtoast.html">Prior
@@ -117,7 +119,7 @@
       Also, <a href="https://www.datcreativity.com/task">the Divergent
       Association Task</a> is the opposite of Semantle.
     </p>
-<p>
+    <p>
       But I wasn't thinking of French Toast when I invented this.
       Instead, I was thinking
       about <a href="https://www.powerlanguage.co.uk/wordle/">Wordle</a>
@@ -132,14 +134,17 @@
       actually has exactly the data that you would need to implement
       it in a really easy form.  Then I remembered word2vec, and here
       we are.
-</p>
+    </p>
     <p> Q: What data set did you use? </p>
-    <p> A: GoogleNews-vectors-negative300.bin</p>
+    <p> A: <tt>GoogleNews-vectors-negative300.bin</tt> from late 2021</p>
     <p> Q: Can I see yesterday's word?  </p>
-    <p> A: Yes, at the top of the page </p>
-    <p> Q: Can I see nearby words once I've found the secret word?</p>
-    <p> A: I'm working on adding that feature. </a>
+    <p> A: Yes, "<span id="yesterday2"></span>". </p>
+    <p> Q: What words were closest to yesterday's word? </p>
+    <p> A: <span id="nearbyYesterday"></span>
+    <p> Q: Source code? </p>
+    <p> A: <a href="https://gitlab.com/novalis_dt/semantle">Yes!</a></p>
 
-<div>Made by <a href="mailto:novalis@novalis.org">David Turner</a>.  Word2vec data from Google.</div>
+
+    <div>Made by <a href="mailto:novalis@novalis.org">David Turner</a>.  Word2vec data from Google.</div>
   </body>
 </html>

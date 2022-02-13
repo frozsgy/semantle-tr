@@ -171,11 +171,29 @@ let Semantle = (function() {
         }
     }
 
+    async function getNearby(word) {
+        const url = "/nearby/" + word ;
+        const response = await fetch(url);
+        try {
+            return await response.json();
+        } catch (e) {
+            return null;
+        }
+    }
+
     async function init() {
         secret = secretWords[puzzleNumber].toLowerCase();
         const yesterday = secretWords[yesterdayPuzzleNumber].toLowerCase();
 
         $('#yesterday').innerHTML = `Yesterday's word was <b>"${yesterday}"</b>.`;
+        $('#yesterday2').innerHTML = yesterday;
+
+        try {
+            const yesterdayNearby = await getNearby(yesterday);
+            $('#nearbyYesterday').innerHTML = `${yesterdayNearby.join(", ")}, in descending order of closensess.`;
+        } catch (e) {
+            $('#nearbyYesterday').innerHTML = `Coming soon!`;
+        }
         updateLocalTime();
 
         try {

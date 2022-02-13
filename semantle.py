@@ -72,6 +72,21 @@ def similarity(word):
         print(e)
         return jsonify(e)
 
+@app.route('/nearby/<string:word>')
+def nearby(word):
+    try:
+        con = sqlite3.connect('word2vec.db')
+        cur = con.cursor()
+        res = cur.execute("SELECT neighbor FROM nearby WHERE word = ? order by percentile desc limit 10 offset 1", (word,))
+        rows = cur.fetchall()
+        con.close()
+        if not rows:
+            return ""
+        return jsonify([row[0] for row in rows])
+    except Exception as e:
+        print(e)
+        return jsonify(e)
+
 
 @app.errorhandler(404)
 def not_found(error):
