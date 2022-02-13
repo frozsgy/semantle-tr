@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Semantle</title>
     <script src="assets/js/secretWords.js"></script>
     <script src="assets/js/semantle.js"></script>
@@ -23,7 +24,18 @@
       comes from Word2vec.  The highest possible similarity is 100
       (indicating that the words are identical and you have won).
     </p>
-    <p id="similarity-story"> </p>
+    <p>
+      Secret words may be any part of speech, but will always be
+      single words.  It's tempting to think only of nouns, since that
+      is how normal semantic word-guessing games work.  Don't get
+      caught in the trap!  Since our Word2vec data set contains some
+      proper nouns, guesses are case-sensitive.  But I removed all but
+      lower-case words from the secret word set, and if your word
+      matches the secret word but for case, you win anyway.  So if you
+      want to know if the word is more like nice
+      or <a href="https://en.wikipedia.org/wiki/Nice">Nice</a>, you
+      can ask about both.
+    </p>
     <p>
       The "Getting close" indicator tells you how close you are --if
       your word is one of the 1,000 nearest normal words to the target
@@ -39,27 +51,16 @@
       dozens of guesses. <b>There's a new word every day</b>, where
       a day starts at midnight UTC <span id="localtime"></span>. <span id="yesterday"></span>
     </p>
-    <p>
-      Secret words may be any part of speech, but will always be
-      single words.  It's tempting to think only of nouns, since that
-      is how normal semantic word-guessing games work.  Don't get
-      caught in the trap!  Since our Word2vec data set contains some
-      proper nouns, guesses are case-sensitive.  But I removed all but
-      lower-case words from the secret word set, and if your word
-      matches the secret word but for case, you win anyway.  So if you
-      want to know if the word is more like nice
-      or <a href="https://en.wikipedia.org/wiki/Nice">Nice</a>, you
-      can ask about both.
-    </p>
+    <p id="similarity-story"> </p>
     <div id="error" style="color:#ff0000"></div>
     <form id="form" autocorrect="off" autocapitalize="none"
-           autocomplete="off">
+          autocomplete="off">
+    <input type="checkbox" name="lower" value="lower" id="lower" /><label for="lower"><small>Treat all input as lowercase (see FAQ at bottom)</small></label><br/>
     <input placeholder="Guess" autocorrect="off" autocapitalize="none"
            autocomplete="off"
            type="search" id="guess">
     <input type="submit" value="Guess" id="guess-btn">
     <input type="button" value="Give up" id="give-up-btn">
-    <input type="checkbox" name="lower" value="lower" id="lower" /><label for="lower">Treat all input as lowercase (see FAQ at bottom)</label>
     </form>
     <div id="response"></div>
     <div style="display:none">

@@ -99,7 +99,7 @@ function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
     let progress = "";
     let cls = "";
     if (similarity >= similarityStory.rest * 100) {
-        percentileText = '<abbr title="Unusual word found!  This word is not in the list of &quot;normal&quot; words that we use for the top-1000 list, but it is still similar!">????</abbr>';
+        percentileText = '<span class="weirdWord">????<span class="tooltiptext">"Unusual word found!  This word is not in the list of &quot;normal&quot; words that we use for the top-1000 list, but it is still similar! (Is it maybe capitalized?)"</span></span>';
     }
     if (percentile) {
         if (percentile == 1000) {
@@ -181,7 +181,7 @@ let Semantle = (function() {
         try {
             similarityStory = await getSimilarityStory(secret);
             $('#similarity-story').innerHTML = `
-For today's secret word, the nearest word has a similarity of
+Today, the nearest word has a similarity of
 <b>${(similarityStory.top * 100).toFixed(2)}</b>, the tenth-nearest has a similarity of
 ${(similarityStory.top10 * 100).toFixed(2)} and the one thousandth nearest word has a
 similarity of ${(similarityStory.rest * 100).toFixed(2)}.
