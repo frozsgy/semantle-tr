@@ -227,6 +227,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             if (secretVec === null) {
                 secretVec = (await getModel(secret)).vec;
             }
+            $('#guess').focus();
             $('#error').textContent = "";
             let guess = $('#guess').value.trim().replace("!", "").replace("*", "");
             if (!guess) {
