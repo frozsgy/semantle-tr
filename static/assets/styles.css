@@ -11,7 +11,7 @@ th {
 }
 
 .close {
-    text-align: right;
+    text-align: left;
 }
 
 /*"Unusual word found!  This word is not in the list of \"normal\" words that we use for the top-1000 list, but it is still similar!";*/
