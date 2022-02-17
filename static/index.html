@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Semantle</title>
-    <script src="assets/js/secretWords.js"></script>
+    <script src="assets/js/secretWords.js?2"></script>
     <script src="assets/js/semantle.js"></script>
     <script src="assets/js/clipboard.js"></script>
     <link rel="stylesheet" href="assets/styles.css">
@@ -151,8 +151,14 @@
     <p> A: <span id="nearbyYesterday"></span>
     <p> Q: Source code? </p>
     <p> A: <a href="https://gitlab.com/novalis_dt/semantle">Yes!</a></p>
-    <p> Q: What about the word "and"?</p>
-    <p> A: No clue why the data set doesn't include it.  Perhaps it was just warping the scores of everything else?</p>
+    <p> Q: What about the words "and" or "of"?</p>
+    <p> A: No clue why the data set doesn't include them.  Perhaps
+      they were just warping the scores of everything else, since they
+      are used in so many different contexts?</p>
+    <p> Q: What about UK spelling?</p>
+    <p> A: The data seems to be normalized to US spelling.  Of course,
+    they probably couldn't normalize some words, like 'biscuit',
+    'lift', or 'pants', so for those you're on your own.</p>
     <p> Q: Can I email you to complain about how words are scored? </p>
     <p> A: I will ignore those emails.  (Sorry, but I do have a day
     job, and it's acually more fun than answering complaint emails).</p>
