@@ -199,7 +199,7 @@ let Semantle = (function() {
         try {
             similarityStory = await getSimilarityStory(secret);
             $('#similarity-story').innerHTML = `
-Today, the nearest word has a similarity of
+Today, puzzle number <b>${puzzleNumber}</b>, the nearest word has a similarity of
 <b>${(similarityStory.top * 100).toFixed(2)}</b>, the tenth-nearest has a similarity of
 ${(similarityStory.top10 * 100).toFixed(2)} and the one thousandth nearest word has a
 similarity of ${(similarityStory.rest * 100).toFixed(2)}.
