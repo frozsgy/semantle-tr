@@ -107,7 +107,7 @@ function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
     let progress = "";
     let cls = "";
     if (similarity >= similarityStory.rest * 100) {
-        percentileText = '<span class="weirdWord">????<span class="tooltiptext">"Unusual word found!  This word is not in the list of &quot;normal&quot; words that we use for the top-1000 list, but it is still similar! (Is it maybe capitalized?)"</span></span>';
+        percentileText = '<span class="weirdWord">????<span class="tooltiptext">Unusual word found!  This word is not in the list of &quot;normal&quot; words that we use for the top-1000 list, but it is still similar! (Is it maybe capitalized?)</span></span>';
     }
     if (percentile) {
         if (percentile == 1000) {
