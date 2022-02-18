@@ -7,6 +7,23 @@
 
     You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
+'use strict';
+
+let gameOver = false;
+let firstGuess = true;
+let guesses = [];
+let guessed = new Set();
+let guessCount = 0;
+let model = null;
+const now = Date.now();
+const today = Math.floor(now / 86400000);
+const initialDay = 19021;
+const puzzleNumber = (today - initialDay) % secretWords.length;
+const yesterdayPuzzleNumber = (today - initialDay + secretWords.length - 1) % secretWords.length;
+const storage = window.localStorage;
+let caps = 0;
+let warnedCaps = 0;
+
 function $(id) {
     if (id.charAt(0) !== '#') return false;
     return document.getElementById(id.substring(1));
@@ -63,8 +80,9 @@ function project_along(v1, v2, t) {
 }
 
 function share() {
-
-    const text = $('#share').value;
+    // We use the stored guesses here, because those are not updated again
+    // once you win -- we don't want to include post-win guesses here.
+    const text = solveStory(JSON.parse(storage.getItem("guesses")), puzzleNumber);
     const copied = ClipboardJS.copy(text);
 
     if (copied) {
@@ -138,24 +156,50 @@ function updateLocalTime() {
     $('#localtime').innerHTML = `or ${now.getHours()}:00 your time`;
 }
 
+function solveStory(guesses, puzzleNumber) {
+    const guess_count = guesses.length;
+    if (guess_count == 0) {
+        return `I gave up on Semantle ${puzzleNumber} without even guessing once.`;
+    }
+
+    if (guess_count == 1) {
+        return `I got Semantle ${puzzleNumber} on my first guess!`;
+    }
+
+    let describe = function(similarity, percentile) {
+        let out = `had a similarity of ${similarity.toFixed(2)}`;
+        if (percentile) {
+            out += ` (${percentile}/1000)`;
+        }
+        return out;
+    }
+
+    const guesses_chrono = guesses.slice();
+    guesses_chrono.sort(function(a, b){return a[3]-b[3]});
+
+    let [similarity, old_guess, percentile, guess_number] = guesses_chrono[0];
+    let first_guess = `My first guess ${describe(similarity, percentile)}.`;
+    let first_guess_in_top = !!percentile;
+
+    let first_hit = '';
+    if (!first_guess_in_top) {
+        for (let entry of guesses_chrono) {
+            [similarity, old_guess, percentile, guess_number] = entry;
+            if (percentile) {
+                first_hit = `  My first word in the top 1000 was at guess #${guess_number}.  `;
+                break;
+            }
+        }
+    }
+
+    const penultimate_guess = guesses_chrono[guesses_chrono.length - 2];
+    [similarity, old_guess, percentile, guess_number] = penultimate_guess;
+    const penultimate_guess_msg = `My penultimate guess ${describe(similarity, percentile)}.`;
+
+    return `I solved Semantle #${puzzleNumber} in ${guess_count} guesses. ${first_guess}${first_hit}${penultimate_guess_msg} https://semantle.novalis.org/`;
+}
+
 let Semantle = (function() {
-    'use strict';
-
-    let gameOver = false;
-    let firstGuess = true;
-    let guesses = [];
-    let guessed = new Set();
-    let guessCount = 0;
-    let model = null;
-    const now = Date.now();
-    const today = Math.floor(now / 86400000);
-    const initialDay = 19021;
-    const puzzleNumber = (today - initialDay) % secretWords.length;
-    const yesterdayPuzzleNumber = (today - initialDay + secretWords.length - 1) % secretWords.length;
-    const storage = window.localStorage;
-    let caps = 0;
-    let warnedCaps = 0;
-
     async function getSimilarityStory(secret) {
         const url = "/similarity/" + secret;
         const response = await fetch(url);
@@ -336,7 +380,6 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
         gameOver = true;
         if (guessCount > 0) {
             $('#response').innerHTML = `<b>You found it in ${guessCount}!  The secret word is ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words. <a href="javascript:share();">Share</a> and play again tomorrow.`
-            $('#share').value = `I solved Semantle #${puzzleNumber} in ${guessCount} guesses.  https://semantle.novalis.org/`
         } else {
             $('#response').innerHTML = `<b>You gave up!  The secret word is: ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words.`;
         }
