@@ -289,6 +289,10 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
                 guess = guess.toLowerCase();
             }
 
+            if (unbritish.hasOwnProperty(guess)) {
+                guess = unbritish[guess];
+            }
+
             if (guess[0].toLowerCase() != guess[0]) {
                 caps += 1;
             }

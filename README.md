@@ -9,4 +9,8 @@ get GoogleNews-vectors-negative300.bin from
 Next, the hints: `dump-hints.py` to create a pickle, then
 `store-hints.py` to import into the db.
 
+Next, figure out which British words have been respelled in word2vec,
+using `british.py`, so that we can respell them for users. They
+come from [here](https://github.com/hyperreality/American-British-English-Translator).
+
 `python semantle.py` to run the web server.
