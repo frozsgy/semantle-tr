@@ -23,6 +23,7 @@ const yesterdayPuzzleNumber = (today - initialDay + secretWords.length - 1) % se
 const storage = window.localStorage;
 let caps = 0;
 let warnedCaps = 0;
+let chrono_forward = 1;
 
 function $(id) {
     if (id.charAt(0) !== '#') return false;
@@ -326,6 +327,8 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             guesses.sort(function(a, b){return b[0]-a[0]});
             saveGame(-1);
 
+            chrono_forward = 1;
+
             updateGuesses(guess);
 
             firstGuess = false;
@@ -350,7 +353,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
     }
 
     function updateGuesses(guess) {
-        let inner = `<tr><th>#</th><th>Guess</th><th>Similarity</th><th>Getting close?</th></tr>`;
+        let inner = `<tr><th id="chronoOrder">#</th><th id="alphaOrder">Guess</th><th id="similarityOrder">Similarity</th><th>Getting close?</th></tr>`;
         /* This is dumb: first we find the most-recent word, and put
            it at the top.  Then we do the rest. */
         for (let entry of guesses) {
@@ -367,6 +370,21 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             }
         }
         $('#guesses').innerHTML = inner;
+        $('#chronoOrder').addEventListener('click', event => {
+            guesses.sort(function(a, b){return chrono_forward * (a[3]-b[3])});
+            chrono_forward *= -1;
+            updateGuesses(guess);
+        });
+        $('#alphaOrder').addEventListener('click', event => {
+            guesses.sort(function(a, b){return a[1].localeCompare(b[1])});
+            chrono_forward = 1;
+            updateGuesses(guess);
+        });
+        $('#similarityOrder').addEventListener('click', event => {
+            guesses.sort(function(a, b){return b[0]-a[0]});
+            chrono_forward = 1;
+            updateGuesses(guess);
+        });
     }
 
 
