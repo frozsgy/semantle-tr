@@ -1,6 +1,8 @@
-from flask import Flask, request, jsonify, send_file, send_from_directory
+from flask import Flask, request, jsonify, send_file, send_from_directory, render_template
 import struct
 import sqlite3
+import base64
+
 
 app = Flask(__name__)
 
@@ -87,6 +89,26 @@ def nearby(word):
         print(e)
         return jsonify(e)
 
+@app.route('/nearby_1k/<string:word_b64>')
+def nearby_1k(word_b64):
+    try:
+        word = base64.b64decode(word_b64.encode('ascii')).decode('ascii')
+
+        con = sqlite3.connect('word2vec.db')
+        cur = con.cursor()
+        res = cur.execute("SELECT neighbor, percentile, similarity FROM nearby WHERE word = ? order by percentile desc limit 1000 offset 1 ", (word,))
+        rows = cur.fetchall()
+        con.close()
+        words = [dict(neighbor = row[0],
+                      percentile=int(row[1]),
+                      similarity="%0.2f" % (100 * row[2])
+                      ) for row in rows]
+        return render_template("top1k.html", word=word, words=words)
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return "Oops, error"
 
 @app.errorhandler(404)
 def not_found(error):

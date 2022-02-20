@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/assets/js/secretWords.js"></script>
+    <script src="/assets/js/nearest1k.js"></script>
+    <title>Semantle: nearest words</title>
+  </head>
+  <body>
+    <div id="warning" style="display:none; ">
+      <div style="border:thin solid black; background-color: #ffdddd">
+        Warning: This will spoil today's Semantle puzzle!  Click this
+        warning to see the contents of this page anyway.
+      </div>
+    </div>
+    <div id="nearest" style="display:none;">
+      The nearest words to <b id="word">{{word}}</b> are:
+      <table >
+        <tr>
+          <th>Closeness (higher is closer)</th>
+          <th>Word</th>
+          <th>Similarity</th>
+        </tr>
+        {% for word in words %}
+        <tr>
+          <td> {{word['percentile']}}</td>
+          <td> {{word.neighbor}}</td>
+          <td> {{word.similarity}}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    <br/>
+    <a href="/">Back to Semantle</a>
+  </body>
+</html>
