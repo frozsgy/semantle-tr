@@ -19,6 +19,7 @@ const now = Date.now();
 const today = Math.floor(now / 86400000);
 const initialDay = 19021;
 const puzzleNumber = (today - initialDay) % secretWords.length;
+const handleStats = puzzleNumber >= 23;
 const yesterdayPuzzleNumber = (today - initialDay + secretWords.length - 1) % secretWords.length;
 const storage = window.localStorage;
 let caps = 0;
@@ -264,14 +265,15 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
         const storagePuzzleNumber = storage.getItem("puzzleNumber");
         if (storagePuzzleNumber != puzzleNumber) {
-            storage.clear();
+            storage.removeItem("guesses");
+            storage.removeItem("winState");
             storage.setItem("puzzleNumber", puzzleNumber);
         }
 
         $('#give-up-btn').addEventListener('click', function(event) {
             if (!gameOver) {
                 if (confirm("Are you sure you want to give up?")) {
-                    endGame(0);
+                    endGame(false, true);
                 }
             }
         });
@@ -324,8 +326,15 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
                 const newEntry = [similarity, guess, percentile, guessCount];
                 guesses.push(newEntry);
+
+                if (handleStats) {
+                    const stats = getStats();
+                    stats['totalGuesses'] += 1;
+                    storage.setItem('stats', JSON.stringify(stats));
+                }
             }
             guesses.sort(function(a, b){return b[0]-a[0]});
+
             saveGame(-1);
 
             chrono_forward = 1;
@@ -334,7 +343,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
             firstGuess = false;
             if (guess.toLowerCase() === secret && !gameOver) {
-                endGame(guesses.length);
+                endGame(true, true);
             }
             return false;
         });
@@ -348,7 +357,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             guessCount = guessed.size;
             updateGuesses("");
             if (winState != -1) {
-                endGame(winState);
+                endGame(winState > 0, false);
             }
         }
     }
@@ -389,25 +398,99 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
     }
 
 
-    function saveGame(winState) {
-        let oldState = storage.getItem("winState");
-        if (oldState == -1 || oldState == null) {
-            storage.setItem("winState", winState);
-            storage.setItem("guesses", JSON.stringify(guesses));
+    function saveGame(guessCount, won) {
+        storage.setItem("winState", won ? guessCount : 0);
+        storage.setItem("guesses", JSON.stringify(guesses));
+    }
+
+    function getStats() {
+        const oldStats = storage.getItem("stats");
+        if (oldStats == null) {
+            const stats = {
+                'firstPlay' : puzzleNumber,
+                'lastEnd' : puzzleNumber - 1,
+                'lastPlay' : puzzleNumber,
+                'winStreak' : 0,
+                'playStreak' : 0,
+                'totalGuesses' : 0,
+                'wins' : 0,
+                'giveups' : 0,
+                'abandons' : 0,
+                'totalPlays' : 0,
+            };
+            storage.setItem("stats", JSON.stringify(stats));
+            return stats;
+        } else {
+            const stats = JSON.parse(oldStats);
+            if (stats['lastPlay'] != puzzleNumber) {
+                const onStreak = (stats['lastPlay'] == puzzleNumber - 1);
+                if (onStreak) {
+                    stats['playStreak'] += 1;
+                }
+                stats['totalPlays'] += 1;
+                if (stats['lastEnd'] != puzzleNumber - 1) {
+                    stats['abandons'] += 1;
+                }
+                stats['lastPlay'] = puzzleNumber;
+            }
+            return stats;
         }
     }
 
-    function endGame(guessCount) {
+    function endGame(won, countStats) {
+        let stats;
+        if (handleStats) {
+            stats = getStats();
+            if (countStats) {
+                const onStreak = (stats['lastEnd'] == puzzleNumber - 1);
+
+                stats['lastEnd'] = puzzleNumber;
+                if (won) {
+                    if (onStreak) {
+                        stats['winStreak'] += 1;
+                    } else {
+                    stats['winStreak'] = 1;
+                    }
+                    stats['wins'] += 1;
+                } else {
+                    stats['winStreak'] = 0;
+                    stats['giveups'] += 1;
+                }
+                storage.setItem("stats", JSON.stringify(stats));
+            }
+        }
+
         $('#give-up-btn').style = "display:none;";
         $('#response').classList.add("gaveup");
         gameOver = true;
         const secretBase64 = btoa(secret);
-        if (guessCount > 0) {
-            $('#response').innerHTML = `<b>You found it in ${guessCount}!  The secret word is ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words. <a href="javascript:share();">Share</a> and play again tomorrow.  You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.`
+        let response;
+        if (won) {
+            response = `<p><b>You found it in ${guesses.length}!  The secret word is ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words. <a href="javascript:share();">Share</a> and play again tomorrow.  You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.</p>`
         } else {
-            $('#response').innerHTML = `<b>You gave up!  The secret word is: ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words.  You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.`;
+            response = `<p><b>You gave up!  The secret word is: ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words.  You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.</p>`;
         }
-        saveGame(guessCount);
+
+        if (handleStats) {
+            const totalGames = stats['wins'] + stats['giveups'] + stats['abandons'];
+            response += `<br/>
+Stats (since we started recording, on day 23): <br/>
+<table>
+<tr><th>First game:</th><td>${stats['firstPlay']}</td></tr>
+<tr><th>Total days played:</th><td>${totalGames}</td></tr>
+<tr><th>Wins:</th><td>${stats['wins']}</td></tr>
+<tr><th>Win streak:</th><td>${stats['winStreak']}</td></tr>
+<tr><th>Give-ups:</th><td>${stats['giveups']}</td></tr>
+<tr><th>Did not finish</th><td>${stats['abandons']}</td></tr>
+<tr><th>Total guesses across all games:</th><td>${stats['totalGuesses']}</td></tr>
+</table>
+`;
+        }
+        $('#response').innerHTML = response;
+
+        if (countStats) {
+            saveGame(guesses.length, won);
+        }
     }
 
     return {
