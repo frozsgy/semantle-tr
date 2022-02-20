@@ -2,6 +2,10 @@ th {
     padding-right: 3em;
 }
 
+th#chronoOrder, th#alphaOrder, th#similarityOrder, input#give-up-btn, input#guess-btn, input#lower{
+    cursor: pointer;
+}
+
 .gaveup {
     border: 1px solid black;
     padding-top: 0.7ex;
