@@ -390,6 +390,11 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
 
     function saveGame(winState) {
+        // If we are in a tab still open from yesterday, we're done here.
+        // Don't save anything because we may overwrite today's game!
+        let savedPuzzleNumber = storage.getItem("puzzleNumber");
+        if (savedPuzzleNumber != puzzleNumber) { return }
+
         let oldState = storage.getItem("winState");
         if (oldState == -1 || oldState == null) {
             storage.setItem("winState", winState);
