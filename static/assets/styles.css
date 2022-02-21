@@ -1,3 +1,41 @@
+body, input {
+    font-size: 17px;
+    line-height: 27px;
+    -webkit-font-smoothing: subpixel-antialiased;
+    font-family:-apple-system-font, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    text-rendering: optimizeLegibility;
+    font-weight:400;
+}
+
+#guess-wrapper {
+    display: flex;
+    margin: 20px 0;
+    align-items: center;
+}
+
+#guess-wrapper input {
+    height: 44px;
+}
+
+#guesses {
+    margin-bottom:40px;
+}
+
+#give-up-btn {
+    height: 44px;
+}
+
+input[type="checkbox"] {
+    margin-bottom: 20px;
+}
+
+body {
+    padding-left:20px;
+    padding-right:20px;
+    padding-top:18px;
+}
+
+
 th {
     padding-right: 3em;
 }
@@ -38,4 +76,8 @@ th {
 
 .weirdWord:hover .tooltiptext {
   visibility: visible;
+}
+
+footer {
+    margin-top: 200px;
 }

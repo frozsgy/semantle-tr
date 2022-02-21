@@ -68,13 +68,14 @@
     <div id="error" style="color:#ff0000"></div>
     <form id="form" autocorrect="off" autocapitalize="none"
           autocomplete="off">
-      <input type="checkbox" name="lower" value="lower" id="lower" /><label for="lower"><small>Treat all input as lowercase (see FAQ at bottom)</small></label><br/>
-    <br/>
-    <input placeholder="Guess" autocorrect="off" autocapitalize="none"
-           autocomplete="off"
-           type="search" id="guess">
-    <input type="submit" value="Guess" id="guess-btn">
-    <input type="button" value="Give up" id="give-up-btn">
+      <input type="checkbox" name="lower" value="lower" id="lower" />
+      <label for="lower">Treat all input as lowercase</label>  (<a href="#capitalized-faq">see FAQ</a>)
+      <div id="guess-wrapper">
+        <input placeholder="Guess" autocorrect="off" autocapitalize="none"
+        autocomplete="off"
+        type="text" id="guess">
+        <input type="submit" value="Guess" id="guess-btn">
+      </div>
     </form>
     <div id="response"></div>
     <div style="display:none">
@@ -82,16 +83,12 @@
     </div>
     <table id="guesses">
     </table>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
+  
 
-<h3>FAQ</h3>
+  <input type="button" value="Give up" id="give-up-btn">
+
+<footer>
+<h3 id="faq">FAQ</h3>
 
     <p> Q: Why is the similarity so different from what I was expecting?</p>
     <p> A: I can think of at least three reasons for this. </p>
@@ -102,7 +99,7 @@
         popular (among newspaper reporters, which is the corpus):
         "display" is more often a verb than a noun, and its vector
         reflects this.</li>
-      <li>You capitalized your word.  SmartKey and some other
+      <li id="capitalized-faq">You capitalized your word.  SmartKey and some other
         keyboards stupidly ignore the autocapitalize settings that I
         have explicitly set in the HTML, and there does not seem to
         be anything I can do about this.  I added a checkbox to help
@@ -200,5 +197,6 @@
 
 
     <div>Made by <a href="mailto:novalis@novalis.org">David Turner</a>.  Word2vec data from Google.</div>
+  </footer>
   </body>
 </html>
