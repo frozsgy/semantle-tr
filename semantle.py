@@ -118,6 +118,11 @@ def not_found(error):
 def error_handler(error):
     return error
 
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
 if __name__ == '__main__':
     import sqlite3
     app.run(host="0.0.0.0", port=5000)
