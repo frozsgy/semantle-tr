@@ -17,3 +17,4 @@ six==1.16.0
 smart-open==5.2.1
 tqdm==4.62.3
 Werkzeug==2.0.2
+black==22.1.0
