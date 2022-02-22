@@ -2,7 +2,7 @@ import sqlite3
 
 import json
 
-con = sqlite3.connect('word2vec.db')
+con = sqlite3.connect("word2vec.db")
 cur = con.cursor()
 
 out = {}
@@ -13,7 +13,6 @@ with open("british_spellings.json") as f:
         count = cur.fetchone()[0]
         if not count:
             out[british] = american
-
 
 
 with open("static/assets/js/british_spellings.js", "w") as f:

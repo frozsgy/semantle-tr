@@ -14,3 +14,8 @@ using `british.py`, so that we can respell them for users. They
 come from [here](https://github.com/hyperreality/American-British-English-Translator).
 
 `python semantle.py` to run the web server.
+
+Formatting
+==========
+
+`black .` to reformat all Python files
