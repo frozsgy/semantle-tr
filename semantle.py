@@ -29,6 +29,15 @@ def send_static(path):
     return send_from_directory("static/assets", path)
 
 
+def expand_bfloat(vec, half_length=600):
+    """
+    expand truncated float32 to float32
+    """
+    if len(vec) == half_length:
+        vec = b"".join((b"\00\00" + bytes(pair)) for pair in zip(vec[::2], vec[1::2]))
+    return vec
+
+
 @app.route("/model/<string:word>")
 def word(word):
     try:
@@ -40,7 +49,7 @@ def word(word):
         if not res:
             return ""
         res = res[0]
-        return jsonify(list(struct.unpack("300f", res)))
+        return jsonify(list(struct.unpack("300f", expand_bfloat(res))))
     except Exception as e:
         print(e)
         return jsonify(e)
@@ -62,7 +71,7 @@ def model2(secret, word):
         if not row:
             return ""
         vec = row[0]
-        result = {"vec": list(struct.unpack("300f", vec))}
+        result = {"vec": list(struct.unpack("300f", expand_bfloat(vec)))}
         if row[1]:
             result["percentile"] = row[1]
         return jsonify(result)

@@ -1,26 +1,39 @@
+# gensim monkeypatch
+import collections.abc
+
+collections.Mapping = collections.abc.Mapping
+
 import gensim.models.keyedvectors as word2vec
+import numpy as np
 
 import sqlite3
+from more_itertools import chunked
 
 model = word2vec.KeyedVectors.load_word2vec_format(
     "../GoogleNews-vectors-negative300.bin", binary=True
 )
 
 con = sqlite3.connect("word2vec.db")
+con.execute("PRAGMA journal_mode=WAL")
 cur = con.cursor()
-cur.execute("""create table if not exists word2vec (word text, vec blob)""")
-con.commit()
-cur.execute("""create unique index if not exists word2vec_word on word2vec (word)""")
+cur.execute("""create table if not exists word2vec (word text PRIMARY KEY, vec blob)""")
 con.commit()
 
-import pdb
+def bfloat(vec):
+    """
+    Half of each floating point vector happens to be zero in the Google model.
+    Possibly using truncated float32 = bfloat. Discard to save space.
+    """
+    vec.dtype = np.int16
+    return vec[1::2].tobytes()
 
-pdb.set_trace()
-
-for i, word in enumerate(model.vocab):
-    if i % 1111 == 0:
-        con.commit()
-    vec = model[word].tostring()
-    cur.execute("insert into word2vec values(?,?)", (word, vec))
+CHUNK_SIZE = 1111
+con.execute("DELETE FROM word2vec")
+for words in chunked(tqdm.tqdm(model.vocab), CHUNK_SIZE):
+    with con:
+        con.executemany(
+            "insert into word2vec values(?,?)",
+            ((word, bfloat(model[word])) for word in words),
+        )
 
 con.commit()
