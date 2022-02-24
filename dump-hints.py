@@ -16,6 +16,8 @@ from numpy.linalg import norm
 import re
 import tqdm.contrib.concurrent
 
+from hashlib import sha1
+
 import code, traceback, signal
 
 # check against all words + phrases in model?
@@ -75,11 +77,22 @@ with open("words_alpha.txt") as walpha:
 
 print("loaded alpha...")
 
+# The banned words are stored obfuscated because I do not want a giant
+# list of banned words to show up in my repository.
+banned_hashes = set()
+with open("banned.txt") as f:
+    for line in f:
+        banned_hashes.add(line.strip())
+
 simple_word = re.compile("^[a-z]*$")
 words = []
 for word in model.vocab:
     if ALL_WORDS or (simple_word.match(word) and word in allowable_words):
-        words.append(word)
+        h = sha1()
+        h.update(("banned" + word).encode('ascii'))
+        hash = h.hexdigest()
+        if not hash in banned_hashes:
+            words.append(word)
 
 hints = {}
 
