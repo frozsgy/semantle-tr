@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body, input {
     font-size: 17px;
     line-height: 27px;
@@ -13,16 +17,14 @@ body, input {
     align-items: center;
 }
 
-#guess-wrapper input {
-    height: 44px;
+#guess-wrapper input,
+#give-up-btn {
+    height: 2.5em;
+    padding: .5em;
 }
 
 #guesses {
     margin-bottom:40px;
-}
-
-#give-up-btn {
-    height: 44px;
 }
 
 input[type="checkbox"] {
