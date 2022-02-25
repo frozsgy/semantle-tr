@@ -11,9 +11,17 @@ body, input {
     font-weight:400;
 }
 
+#form-row {
+    align-items: center;
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    justify-content: start;
+}
+
 #guess-wrapper {
     display: flex;
-    margin: 20px 0;
+    margin: 20px 20px 20px 0;
     align-items: center;
 }
 
@@ -27,16 +35,11 @@ body, input {
     margin-bottom:40px;
 }
 
-input[type="checkbox"] {
-    margin-bottom: 20px;
-}
-
 body {
     padding-left:20px;
     padding-right:20px;
     padding-top:18px;
 }
-
 
 th {
     padding-right: 3em;
