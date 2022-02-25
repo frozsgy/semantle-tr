@@ -46,17 +46,8 @@ model = word2vec.KeyedVectors.load_word2vec_format(
 
 print("loaded model...")
 
-
-def mag(v):
-    return math.sqrt(sum(x * x for x in v))
-
-
-def similarity(v1, v2):
-    return abs(sum(a * b for a, b in zip(v1, v2)) / (mag(v1) * mag(v2)))
-
-
 def similarity(a, b):
-    return abs(dot(a, b) / (norm(a) * norm(b)))
+    return dot(a, b) / (norm(a) * norm(b))
 
 
 # synonyms = {}
@@ -105,6 +96,7 @@ with open("static/assets/js/secretWords.js") as f:
             continue
         secrets.append(line.strip('",'))
 
+#secrets = words
 
 def find_hints(secret, progress=True):
     if progress:  # works poorly in parellel

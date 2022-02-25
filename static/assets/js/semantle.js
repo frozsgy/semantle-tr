@@ -44,7 +44,7 @@ function dot(f1, f2) {
 }
 
 function getCosSim(f1, f2) {
-    return Math.abs(dot(f1,f2)/(mag(f1)*mag(f2)));
+    return dot(f1,f2)/(mag(f1)*mag(f2));
 }
 
 
