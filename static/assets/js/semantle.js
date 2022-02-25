@@ -135,7 +135,7 @@ function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
         } else {
             cls = "close";
             percentileText = `<span style="text-align:right; width:5em; display:inline-block;">${percentile}/1000</span>&nbsp;`;
-            progress = ` <span style="display:inline-block;width:10em;height:1ex; padding-bottom:1ex; background-color:#eeeeee;">
+            progress = ` <span style="display:inline-block;width:10em; background-color:#eeeeee;">
 <span style="background-color:#008000; width:${percentile/10}%; display:inline-block">&nbsp;</span>
 </span>`;
         }
