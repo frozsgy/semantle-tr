@@ -48,10 +48,13 @@ th#chronoOrder, th#alphaOrder, th#similarityOrder, input#give-up-btn, input#gues
 
 .gaveup {
     border: 1px solid black;
-    padding-top: 0.7ex;
-    padding-bottom: 0.7ex;
-    padding-left: 0.7em;
+    margin-bottom: 1em;
+    padding: 1em;
     background-color: #eeeeff;
+}
+
+.gaveup > *:first-child {
+    margin-top: 0;
 }
 
 .close {
