@@ -34,9 +34,11 @@
       secret word.  Unlike that other word game, it's not about the
       spelling; it's about the meaning. The similarity value comes
       from Word2vec.  The highest possible similarity is 100
-      (indicating that the words are identical and you have won).  By
-      "semantically similar", I mean, roughly "used in the context of
-      similar words, in a database of news articles."
+      (indicating that the words are identical and you have won). The
+      lowest in theory is -100, but in practice the lowest is
+      something like -34.  By "semantically similar", I mean, roughly
+      "used in the context of similar words, in a database of news
+      articles."
     </p>
     <p>
       Secret words may be any part of speech, but will always be
