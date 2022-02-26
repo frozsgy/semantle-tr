@@ -138,7 +138,7 @@ if CONCURRENCY:
         find_hints_no_progress, secrets, max_workers=12, chunksize=1, total=len(secrets)
     )
 else:
-    mapper = tqdm((find_hints(secret) for secret in secrets), total=len(secrets))
+    mapper = tqdm.tqdm((find_hints(secret) for secret in secrets), total=len(secrets))
 
 
 with open("hints.json", "w+") as hints_file:
