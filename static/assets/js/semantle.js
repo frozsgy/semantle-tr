@@ -146,7 +146,8 @@ function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
     } else {
         color = '#000000';
     }
-    return `<tr><td>${guessNumber}</td><td style="color:${color}" onclick="select('${oldGuess}', secretVec);">${oldGuess}</td><td>${similarity.toFixed(2)}</td><td class="${cls}">${percentileText}${progress}
+    const similarityColor = similarity * 2.55;
+    return `<tr><td>${guessNumber}</td><td style="color:${color}" onclick="select('${oldGuess}', secretVec);">${oldGuess}</td><td style="color: rgb(${similarityColor},0,0)">${similarity.toFixed(2)}</td><td class="${cls}">${percentileText}${progress}
 </td></tr>`;
 
 }
