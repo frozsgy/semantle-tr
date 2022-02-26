@@ -293,7 +293,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
                 guess = guess.toLowerCase();
             }
 
-            if (typeof unbritish !== undefined && unbritish.hasOwnProperty(guess)) {
+            if (typeof unbritish !== 'undefined' && unbritish.hasOwnProperty(guess)) {
                 guess = unbritish[guess];
             }
 
