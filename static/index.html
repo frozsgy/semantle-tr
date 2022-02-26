@@ -71,13 +71,17 @@
     <div id="error" style="color:#ff0000"></div>
     <form id="form" autocorrect="off" autocapitalize="none"
           autocomplete="off">
-      <input type="checkbox" name="lower" value="lower" id="lower" />
-      <label for="lower">Treat all input as lowercase</label>  (<a href="#capitalized-faq">see FAQ</a>)
-      <div id="guess-wrapper">
-        <input placeholder="Guess" autocorrect="off" autocapitalize="none"
-        autocomplete="off"
-        type="text" id="guess">
-        <input type="submit" value="Guess" id="guess-btn">
+      <div id="form-row">
+        <div>
+          <input type="checkbox" name="lower" value="lower" id="lower" />
+          <label for="lower">Treat all input as lowercase</label>  (<a href="#capitalized-faq">see FAQ</a>)
+        </div>
+        <div id="guess-wrapper">
+          <input placeholder="Guess" autocorrect="off" autocapitalize="none"
+          autocomplete="off"
+          type="text" id="guess">
+          <input type="submit" value="Guess" id="guess-btn">
+        </div>
       </div>
     </form>
     <div id="response"></div>
