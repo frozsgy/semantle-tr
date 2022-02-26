@@ -1,7 +1,7 @@
 So, this is sort of hacked together from a lot of data sources and the
 code is a mess.  Here's a hello world of how to get up and running.
 
-1. Install Python requirements using `pip install -r requirements.txt`. You'll need to use Python 3.9.x as Gensim 3.x.x doesn't work with Python 3.10+.
+1. Install Python requirements using `pip install -r requirements.txt`.
 
 2. Download `GoogleNews-vectors-negative300.bin.gz` from [here](https://code.google.com/archive/p/word2vec/), and extract it into the parent directory of this project.
 
