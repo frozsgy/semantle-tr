@@ -49,7 +49,6 @@ print("loaded model...")
 def similarity(a, b):
     return dot(a, b) / (norm(a) * norm(b))
 
-
 # synonyms = {}
 
 # with open("moby/words.txt") as moby:
@@ -96,7 +95,7 @@ with open("static/assets/js/secretWords.js") as f:
             continue
         secrets.append(line.strip('",'))
 
-#secrets = words
+secrets = words
 
 def find_hints(secret, progress=True):
     if progress:  # works poorly in parellel
@@ -136,7 +135,7 @@ if CONCURRENCY:
     # may need to limit concurrency for memory reasons
     # XXX bug: wraps all results into a list, e.g. won't write any until the very end
     mapper = tqdm.contrib.concurrent.process_map(
-        find_hints_no_progress, secrets, chunksize=1, total=len(secrets)
+        find_hints_no_progress, secrets, max_workers=12, chunksize=1, total=len(secrets)
     )
 else:
     mapper = tqdm((find_hints(secret) for secret in secrets), total=len(secrets))
