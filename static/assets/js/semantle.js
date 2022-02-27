@@ -254,7 +254,7 @@ let Semantle = (function() {
         try {
             similarityStory = await getSimilarityStory(secret);
             $('#similarity-story').innerHTML = `
-Today, puzzle number <b>${puzzleNumber}</b>, the nearest word has a similarity of
+Today is puzzle number <b>${puzzleNumber}</b>. The nearest word has a similarity of
 <b>${(similarityStory.top * 100).toFixed(2)}</b>, the tenth-nearest has a similarity of
 ${(similarityStory.top10 * 100).toFixed(2)} and the one thousandth nearest word has a
 similarity of ${(similarityStory.rest * 100).toFixed(2)}.
@@ -269,6 +269,23 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             storage.removeItem("winState");
             storage.setItem("puzzleNumber", puzzleNumber);
         }
+
+        if (!storage.getItem("readRules")) {
+            openRules();
+        }
+
+        $("#rules-button").addEventListener('click', openRules);
+
+        [$("#rules-underlay"), $("#rules-close")].forEach((el) => {
+            el.addEventListener('click', () => {
+                document.body.classList.remove('rules-open');
+            });
+        });
+
+        $("#rules").addEventListener("click", (event) => {
+            // prevents click from propagating to the underlay, which closes the rules
+            event.stopPropagation();
+        });
 
         $('#give-up-btn').addEventListener('click', function(event) {
             if (!gameOver) {
@@ -362,6 +379,11 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
                 endGame(winState > 0, false);
             }
         }
+    }
+
+    function openRules() {
+        document.body.classList.add('rules-open');
+        storage.setItem("readRules", true);
     }
 
     function updateGuesses(guess) {
