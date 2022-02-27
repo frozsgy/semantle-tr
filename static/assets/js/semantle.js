@@ -245,7 +245,7 @@ let Semantle = (function() {
 
         try {
             const yesterdayNearby = await getNearby(yesterday);
-            const secretBase64 = btoa(yesterday);
+            const secretBase64 = btoa(unescape(encodeURIComponent(yesterday)));
             $('#nearbyYesterday').innerHTML = `${yesterdayNearby.join(", ")}, in descending order of closensess. <a href="nearby_1k/${secretBase64}">More?</a>`;
         } catch (e) {
             $('#nearbyYesterday').innerHTML = `Coming soon!`;
@@ -493,7 +493,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
         $('#give-up-btn').style = "display:none;";
         $('#response').classList.add("gaveup");
         gameOver = true;
-        const secretBase64 = btoa(secret);
+        const secretBase64 = btoa(unescape(encodeURIComponent(secret)));
         let response;
         if (won) {
             response = `<p><b>You found it in ${guesses.length}!  The secret word is ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words. <a href="javascript:share();">Share</a> and play again tomorrow.  You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.</p>`
