@@ -50,7 +50,7 @@ def find_hints(model, words, secret, progress=True):
     else:
         worditer = words
 
-    target_vec = model[secret]
+    target_vec = model.key_to_index[secret]
 
     #        syns = synonyms.get(secret) or []
     nearest = []
@@ -63,7 +63,7 @@ def find_hints(model, words, secret, progress=True):
         #                continue
         #            if word in secret or secret in word:
         #                continue
-        vec = model[word]
+        vec = model.key_to_index[word]
         # why not model.wv.similarity(wordA, wordB)?
         s = similarity(vec, target_vec)
         heapq.heappush(nearest, (s, word))
@@ -109,7 +109,7 @@ if __name__ == "__main__":
 
     simple_word = re.compile("^[a-z]*$")
     words = []
-    for word in model.vocab:
+    for word in model.key_to_index:
         if ALL_WORDS or (simple_word.match(word) and word in allowable_words):
             h = sha1()
             h.update(("banned" + word).encode("ascii"))
