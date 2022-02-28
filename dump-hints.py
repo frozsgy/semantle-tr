@@ -40,10 +40,6 @@ def debug(sig, frame):
     i.interact(message)
 
 
-def similarity(a, b):
-    return dot(a, b) / (norm(a) * norm(b))
-
-
 def find_hints(model, words, secret, progress=True):
     if progress:  # works poorly in parellel
         worditer = tqdm.tqdm(words, leave=False)
@@ -51,6 +47,7 @@ def find_hints(model, words, secret, progress=True):
         worditer = words
 
     target_vec = model.key_to_index[secret]
+    target_vec_norm = norm(target_vec)
 
     #        syns = synonyms.get(secret) or []
     nearest = []
@@ -65,8 +62,8 @@ def find_hints(model, words, secret, progress=True):
         #                continue
         vec = model.key_to_index[word]
         # why not model.wv.similarity(wordA, wordB)?
-        s = similarity(vec, target_vec)
-        heapq.heappush(nearest, (s, word))
+        similarity = dot(vec, target_vec) / (norm(vec) * target_vec_norm)
+        heapq.heappush(nearest, (similarity, word))
         if len(nearest) > 1000:
             heapq.heappop(nearest)
     nearest.sort()
