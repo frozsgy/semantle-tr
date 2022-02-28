@@ -128,8 +128,6 @@ if __name__ == "__main__":
                 continue
             secrets.append(line.strip('",'))
 
-    secrets = words
-
     CONCURRENCY = True
     if CONCURRENCY:
         # may need to limit concurrency for memory reasons
