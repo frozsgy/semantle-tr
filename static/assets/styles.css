@@ -153,6 +153,26 @@ th#chronoOrder, th#alphaOrder, th#similarityOrder, input#give-up-btn, input#gues
     text-align: left;
 }
 
+.percentile,
+.progress-container,
+.progress-bar {
+    display: inline-block;
+}
+
+.percentile {
+    text-align: right;
+    width: 5em;
+}
+
+.progress-container {
+    background-color: #eeeeee;
+    width: 10em; 
+}
+
+.progress-bar {
+    background-color:#008000;
+}
+
 /*"Unusual word found!  This word is not in the list of \"normal\" words that we use for the top-1000 list, but it is still similar!";*/
 
 .weirdWord {
@@ -200,3 +220,35 @@ footer {
         padding-right: .5em;
     }
 }
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: black;
+        color: #fafafa;
+    }
+
+    a {
+        color: #9af;
+    }
+
+    #rules-button {
+        border-color: #fafafa;
+        color: #fafafa;
+    }
+
+    #rules {
+        background: #333;
+    }
+
+    #rules-close {
+        color: #fafafa;
+    }
+
+    .progress-container {
+        background: #333;
+    }
+
+    .gaveup {
+        background: #334;
+    }
+  }
