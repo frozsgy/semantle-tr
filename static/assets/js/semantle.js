@@ -145,7 +145,7 @@ function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
     if (oldGuess === guess) {
         color = '#c0c';
     } else if (prefersDarkColorScheme) {
-        color = '#fff';
+        color = '#fafafa';
     } else {
         color = '#000';
     }
