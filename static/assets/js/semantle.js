@@ -25,6 +25,7 @@ const storage = window.localStorage;
 let caps = 0;
 let warnedCaps = 0;
 let chrono_forward = 1;
+let prefersDarkColorScheme = false;
 
 function $(id) {
     if (id.charAt(0) !== '#') return false;
@@ -134,20 +135,28 @@ function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
             percentileText = "FOUND!";
         } else {
             cls = "close";
-            percentileText = `<span style="text-align:right; width:5em; display:inline-block;">${percentile}/1000</span>&nbsp;`;
-            progress = ` <span style="display:inline-block;width:10em; background-color:#eeeeee;">
-<span style="background-color:#008000; width:${percentile/10}%; display:inline-block">&nbsp;</span>
+            percentileText = `<span class="percentile">${percentile}/1000</span>&nbsp;`;
+            progress = ` <span class="progress-container">
+<span class="progress-bar" style="width:${percentile/10}%">&nbsp;</span>
 </span>`;
         }
     }
     let color;
     if (oldGuess === guess) {
-        color = '#cc00cc';
+        color = '#c0c';
+    } else if (prefersDarkColorScheme) {
+        color = '#fafafa';
     } else {
-        color = '#000000';
+        color = '#000';
     }
-    const similarityColor = similarity * 2.55;
-    return `<tr><td>${guessNumber}</td><td style="color:${color}" onclick="select('${oldGuess}', secretVec);">${oldGuess}</td><td style="color: rgb(${similarityColor},0,0)">${similarity.toFixed(2)}</td><td class="${cls}">${percentileText}${progress}
+    const similarityLevel = similarity * 2.55;
+    let similarityColor;
+    if (prefersDarkColorScheme) {
+        similarityColor = `255,${255-similarityLevel},${255-similarityLevel}`;
+    } else {
+        similarityColor = `${similarityLevel},0,0`;
+    }
+    return `<tr><td>${guessNumber}</td><td style="color:${color}" onclick="select('${oldGuess}', secretVec);">${oldGuess}</td><td style="color: rgb(${similarityColor})">${similarity.toFixed(2)}</td><td class="${cls}">${percentileText}${progress}
 </td></tr>`;
 
 }
@@ -269,6 +278,10 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             storage.removeItem("guesses");
             storage.removeItem("winState");
             storage.setItem("puzzleNumber", puzzleNumber);
+        }
+
+        if (window.matchMedia('(prefers-color-scheme: dark)')) {
+            prefersDarkColorScheme = true;
         }
 
         if (!storage.getItem("readRules")) {
