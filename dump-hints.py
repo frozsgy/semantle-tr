@@ -27,6 +27,42 @@ import code, traceback, signal
 ALL_WORDS = False
 
 
+model = word2vec.KeyedVectors.load_word2vec_format(
+    "../GoogleNews-vectors-negative300.bin", binary=True
+)
+
+
+def make_words():
+    allowable_words = set()
+    with open("words_alpha.txt") as walpha:
+        for line in walpha.readlines():
+            allowable_words.add(line.strip())
+
+    print("loaded alpha...")
+
+    # The banned words are stored obfuscated because I do not want a giant
+    # list of banned words to show up in my repository.
+    banned_hashes = set()
+    with open("banned.txt") as f:
+        for line in f:
+            banned_hashes.add(line.strip())
+
+    simple_word = re.compile("^[a-z]*$")
+    words = []
+    for word in model.key_to_index:
+        if ALL_WORDS or (simple_word.match(word) and word in allowable_words):
+            h = sha1()
+            h.update(("banned" + word).encode("ascii"))
+            hash = h.hexdigest()
+            if not hash in banned_hashes:
+                words.append(word)
+
+    return words
+
+
+words = make_words()
+
+
 def debug(sig, frame):
     """Interrupt running process, and provide a python prompt for
     interactive debugging."""
@@ -40,7 +76,11 @@ def debug(sig, frame):
     i.interact(message)
 
 
-def find_hints(model, words, secret, progress=True):
+def similarity(a, b):
+    return dot(a, b) / (norm(a) * norm(b))
+
+
+def find_hints(secret, progress=True):
     if progress:  # works poorly in parellel
         worditer = tqdm.tqdm(words, leave=False)
     else:
@@ -73,12 +113,6 @@ def find_hints(model, words, secret, progress=True):
 if __name__ == "__main__":
     signal.signal(signal.SIGUSR1, debug)  # Register handler
 
-    model = word2vec.KeyedVectors.load_word2vec_format(
-        "../GoogleNews-vectors-negative300.bin", binary=True
-    )
-
-    print("loaded model...")
-
     # synonyms = {}
 
     # with open("moby/words.txt") as moby:
@@ -89,30 +123,6 @@ if __name__ == "__main__":
     #         synonyms[word] = set(words)
 
     print("loaded moby...")
-
-    allowable_words = set()
-    with open("words_alpha.txt") as walpha:
-        for line in walpha.readlines():
-            allowable_words.add(line.strip())
-
-    print("loaded alpha...")
-
-    # The banned words are stored obfuscated because I do not want a giant
-    # list of banned words to show up in my repository.
-    banned_hashes = set()
-    with open("banned.txt") as f:
-        for line in f:
-            banned_hashes.add(line.strip())
-
-    simple_word = re.compile("^[a-z]*$")
-    words = []
-    for word in model.key_to_index:
-        if ALL_WORDS or (simple_word.match(word) and word in allowable_words):
-            h = sha1()
-            h.update(("banned" + word).encode("ascii"))
-            hash = h.hexdigest()
-            if not hash in banned_hashes:
-                words.append(word)
 
     hints = {}
 
@@ -130,7 +140,7 @@ if __name__ == "__main__":
         # may need to limit concurrency for memory reasons
         # XXX bug: wraps all results into a list, e.g. won't write any until the very end
         mapper = tqdm.contrib.concurrent.process_map(
-            partial(find_hints, model, words, progress=False),
+            partial(find_hints, progress=False),
             secrets,
             max_workers=12,
             chunksize=1,
@@ -138,7 +148,7 @@ if __name__ == "__main__":
         )
     else:
         mapper = tqdm.tqdm(
-            (find_hints(model, words, secret) for secret in secrets), total=len(secrets)
+            (find_hints(secret) for secret in secrets), total=len(secrets)
         )
 
     with open("hints.json", "w+") as hints_file:
