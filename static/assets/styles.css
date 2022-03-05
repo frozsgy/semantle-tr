@@ -252,4 +252,10 @@ footer {
     .gaveup {
         background: #334;
     }
+
+    .weirdWord {
+        position: relative;
+        display: inline-block;
+        border-bottom: 1px dotted white;
+    }
   }
