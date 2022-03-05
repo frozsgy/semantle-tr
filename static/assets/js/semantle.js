@@ -280,10 +280,6 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             storage.setItem("puzzleNumber", puzzleNumber);
         }
 
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            prefersDarkColorScheme = true;
-        }
-
         if (!storage.getItem("readRules")) {
             openRules();
         }
@@ -337,6 +333,12 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             }
 
             $('#guess').value = "";
+
+            // We re-check dark mode after every guess, in case
+            // it changes mid-game
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                prefersDarkColorScheme = true;
+            }
 
             const guessData = await getModel(guess);
             if (!guessData) {
