@@ -42,5 +42,5 @@ for words in chunked(tqdm.tqdm(model.key_to_index), CHUNK_SIZE):
     with con:
         con.executemany(
             "insert into word2vec values(?,?)",
-            ((word, bfloat(model.key_to_index[word])) for word in words),
+            ((word, bfloat(model[word])) for word in words),
         )
