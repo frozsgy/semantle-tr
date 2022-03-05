@@ -254,8 +254,6 @@ footer {
     }
 
     .weirdWord {
-        position: relative;
-        display: inline-block;
-        border-bottom: 1px dotted white;
+        border-color: #fafafa;
     }
   }

@@ -12,6 +12,7 @@
 let gameOver = false;
 let firstGuess = true;
 let guesses = [];
+let latestGuess = undefined;
 let guessed = new Set();
 let guessCount = 0;
 let model = null;
@@ -25,6 +26,7 @@ const storage = window.localStorage;
 let caps = 0;
 let warnedCaps = 0;
 let chrono_forward = 1;
+let darkModeMql = window.matchMedia('(prefers-color-scheme: dark)');
 let prefersDarkColorScheme = false;
 
 function $(id) {
@@ -280,8 +282,10 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             storage.setItem("puzzleNumber", puzzleNumber);
         }
 
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            prefersDarkColorScheme = true;
+        prefersDarkColorScheme = darkModeMql.matches;
+        darkModeMql.onchange = (e) => {
+            prefersDarkColorScheme = !!e.matches;
+            updateGuesses();
         }
 
         if (!storage.getItem("readRules")) {
@@ -338,12 +342,6 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
             $('#guess').value = "";
 
-            // We re-check dark mode after every guess, in case
-            // it changes mid-game
-            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                prefersDarkColorScheme = true;
-            }
-
             const guessData = await getModel(guess);
             if (!guessData) {
                 $('#error').textContent = `I don't know the word ${guess}.`;
@@ -378,7 +376,8 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
             chrono_forward = 1;
 
-            updateGuesses(guess);
+            latestGuess = guess;
+            updateGuesses();
 
             firstGuess = false;
             if (guess.toLowerCase() === secret && !gameOver) {
@@ -394,7 +393,8 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
                 guessed.add(guess[1]);
             }
             guessCount = guessed.size;
-            updateGuesses("");
+            latestGuess = "";
+            updateGuesses();
             if (winState != -1) {
                 endGame(winState > 0, false);
             }
@@ -406,20 +406,20 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
         storage.setItem("readRules", true);
     }
 
-    function updateGuesses(guess) {
+    function updateGuesses() {
         let inner = `<tr><th id="chronoOrder">#</th><th id="alphaOrder">Guess</th><th id="similarityOrder">Similarity</th><th>Getting close?</th></tr>`;
         /* This is dumb: first we find the most-recent word, and put
            it at the top.  Then we do the rest. */
         for (let entry of guesses) {
             let [similarity, oldGuess, percentile, guessNumber] = entry;
-            if (oldGuess == guess) {
-                inner += guessRow(similarity, oldGuess, percentile, guessNumber, guess);
+            if (oldGuess == latestGuess) {
+                inner += guessRow(similarity, oldGuess, percentile, guessNumber, latestGuess);
             }
         }
         inner += "<tr><td colspan=4><hr></td></tr>";
         for (let entry of guesses) {
             let [similarity, oldGuess, percentile, guessNumber] = entry;
-            if (oldGuess != guess) {
+            if (oldGuess != latestGuess) {
                 inner += guessRow(similarity, oldGuess, percentile, guessNumber);
             }
         }
@@ -427,17 +427,17 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
         $('#chronoOrder').addEventListener('click', event => {
             guesses.sort(function(a, b){return chrono_forward * (a[3]-b[3])});
             chrono_forward *= -1;
-            updateGuesses(guess);
+            updateGuesses();
         });
         $('#alphaOrder').addEventListener('click', event => {
             guesses.sort(function(a, b){return a[1].localeCompare(b[1])});
             chrono_forward = 1;
-            updateGuesses(guess);
+            updateGuesses();
         });
         $('#similarityOrder').addEventListener('click', event => {
             guesses.sort(function(a, b){return b[0]-a[0]});
             chrono_forward = 1;
-            updateGuesses(guess);
+            updateGuesses();
         });
     }
 
