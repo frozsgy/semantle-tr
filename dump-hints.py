@@ -75,18 +75,13 @@ def debug(sig, frame):
     message += "".join(traceback.format_stack(frame))
     i.interact(message)
 
-
-def similarity(a, b):
-    return dot(a, b) / (norm(a) * norm(b))
-
-
 def find_hints(secret, progress=True):
     if progress:  # works poorly in parellel
         worditer = tqdm.tqdm(words, leave=False)
     else:
         worditer = words
 
-    target_vec = model.key_to_index[secret]
+    target_vec = model[secret]
     target_vec_norm = norm(target_vec)
 
     #        syns = synonyms.get(secret) or []
@@ -100,7 +95,7 @@ def find_hints(secret, progress=True):
         #                continue
         #            if word in secret or secret in word:
         #                continue
-        vec = model.key_to_index[word]
+        vec = model[word]
         # why not model.wv.similarity(wordA, wordB)?
         similarity = dot(vec, target_vec) / (norm(vec) * target_vec_norm)
         heapq.heappush(nearest, (similarity, word))
