@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>Semantle</title>
     <script src="assets/js/secretWords.js?2"></script>
-    <script src="assets/js/semantle.js"></script>
     <script src="assets/js/clipboard.js"></script>
     <script src="assets/js/british_spellings.js"></script>
+    <script src="https://kit.fontawesome.com/b6eb2a3998.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="assets/styles.css">
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
@@ -24,14 +24,19 @@
 -->
   </head>
   <body>
+    <!-- place this script after body so it can reference it -->
+    <script src="assets/js/semantle.js"></script>
     <header>
       <h2>Semantle</h2>
-      <button aria-label="Rules" id="rules-button">?</button>
+      <nav id="menu">
+        <button aria-label="Rules" id="rules-button"><i class="fa-regular fa-circle-question"></i></button>
+        <button aria-label="Settings" id="settings-button"><i class="fa-solid fa-gear"></i></button>
+      </nav>
     </header>
-    <div id="rules-underlay">
-      <div id="rules" aria-labelledby="rules-heading" aria-modal="true">
-        <button id="rules-close" aria-label="Close">&times;</button>
-        <div id="rules-content">
+    <div class="dialog-underlay" id="rules-underlay">
+      <div class="dialog" id="rules" aria-labelledby="rules-heading" aria-modal="true">
+        <button class="dialog-close" id="rules-close" aria-label="Close">&times;</button>
+        <div class="dialog-content" id="rules-content">
           <h3 id="rules-heading">Guess the secret word</h3>
           <p>
             Each guess must be a word (of any length).  Some short phrases
@@ -80,17 +85,11 @@
     <div id="error" style="color:#ff0000"></div>
     <form id="form" autocorrect="off" autocapitalize="none"
           autocomplete="off">
-      <div id="form-row">
-        <div>
-          <input type="checkbox" name="lower" value="lower" id="lower" />
-          <label for="lower">Treat all input as lowercase</label>  (<a href="#capitalized-faq">see FAQ</a>)
-        </div>
-        <div id="guess-wrapper">
-          <input placeholder="Guess" autocorrect="off" autocapitalize="none"
-          autocomplete="off"
-          type="text" id="guess">
-          <input type="submit" value="Guess" id="guess-btn">
-        </div>
+      <div id="guess-wrapper">
+        <input placeholder="Guess" autocorrect="off" autocapitalize="none"
+        autocomplete="off"
+        type="text" id="guess">
+        <input type="submit" value="Guess" id="guess-btn">
       </div>
     </form>
     <div id="response"></div>
@@ -224,5 +223,20 @@
 
     <div>Made by <a href="mailto:novalis@novalis.org">David Turner</a>.  Word2vec data from Google.</div>
   </footer>
+  <div class="dialog-underlay" id="settings-underlay">
+    <div class="dialog" id="settings" aria-labelledby="settings-heading" aria-modal="true">
+      <button class="dialog-close" id="settings-close" aria-label="Close">&times;</button>
+      <div class="dialog-content" id="settings-content">
+        <div>
+          <input type="checkbox" name="dark-mode" value="dark-mode" id="dark-mode" />
+          <label for="dark-mode">Dark mode</label>
+        </div>
+        <div>
+          <input type="checkbox" name="lower" value="lower" id="lower" />
+          <label for="lower">Treat all input as lowercase</label>  (<a id="capitalized-link" href="#capitalized-faq">see FAQ</a>)
+        </div>
+      </div>
+    </div>
+  </div>
   </body>
 </html>
