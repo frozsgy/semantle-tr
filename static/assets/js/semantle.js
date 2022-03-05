@@ -280,6 +280,10 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             storage.setItem("puzzleNumber", puzzleNumber);
         }
 
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            prefersDarkColorScheme = true;
+        }
+
         if (!storage.getItem("readRules")) {
             openRules();
         }
