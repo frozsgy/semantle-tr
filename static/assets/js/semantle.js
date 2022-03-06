@@ -421,10 +421,12 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
     function openRules() {
         document.body.classList.add('dialog-open', 'rules-open');
         storage.setItem("readRules", true);
+        $("#rules-close").focus();
     }
 
     function openSettings() {
         document.body.classList.add('dialog-open', 'settings-open');
+        $("#settings-close").focus();
     }
 
     function updateGuesses() {
