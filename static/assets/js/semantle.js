@@ -576,6 +576,7 @@ Stats (since we started recording, on day 23): <br/>
 <tr><th>Give-ups:</th><td>${stats['giveups']}</td></tr>
 <tr><th>Did not finish</th><td>${stats['abandons']}</td></tr>
 <tr><th>Total guesses across all games:</th><td>${stats['totalGuesses']}</td></tr>
+<tr><th>Average guesses across all games:</th><td>${(stats['totalGuesses'] / totalGames).toFixed(2)}</td></tr>
 </table>
 `;
         }
