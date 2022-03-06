@@ -109,6 +109,10 @@ h2 {
     margin-bottom: 0;
 }
 
+#error {
+    color: #f00;
+}
+
 #guess-wrapper {
     display: flex;
     margin: 20px 0;

@@ -77,7 +77,7 @@
       </div>
     </div>
     <p id="similarity-story"> </p>
-    <div id="error" style="color:#ff0000"></div>
+    <div id="error" aria-live="assertive"></div>
     <form id="form" autocorrect="off" autocapitalize="none"
           autocomplete="off">
       <div id="form-row">
@@ -93,11 +93,11 @@
         </div>
       </div>
     </form>
-    <div id="response"></div>
+    <div id="response" aria-live="assertive"></div>
     <div style="display:none">
       <input type="text" id="share" />
     </div>
-    <table id="guesses">
+    <table aria-live="polite" id="guesses" role="log">
     </table>
   
 
