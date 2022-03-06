@@ -369,7 +369,9 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
             let similarity = getCosSim(guessVec, secretVec) * 100.0;
             if (!guessed.has(guess)) {
-                guessCount += 1;
+                if (!gameOver) {
+                    guessCount += 1;
+                }
                 guessed.add(guess);
 
                 const newEntry = [similarity, guess, percentile, guessCount];
@@ -377,7 +379,9 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
                 if (handleStats) {
                     const stats = getStats();
-                    stats['totalGuesses'] += 1;
+                    if (!gameOver) {
+                        stats['totalGuesses'] += 1;
+                    }
                     storage.setItem('stats', JSON.stringify(stats));
                 }
             }
