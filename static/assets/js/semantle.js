@@ -27,11 +27,10 @@ let caps = 0;
 let warnedCaps = 0;
 let chrono_forward = 1;
 let darkModeMql = window.matchMedia('(prefers-color-scheme: dark)');
-let prefersDarkColorScheme = false;
+let darkMode = false;
 
-function $(id) {
-    if (id.charAt(0) !== '#') return false;
-    return document.getElementById(id.substring(1));
+function $(q) {
+    return document.querySelector(q);
 }
 
 function mag(a) {
@@ -146,14 +145,14 @@ function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
     let color;
     if (oldGuess === guess) {
         color = '#c0c';
-    } else if (prefersDarkColorScheme) {
+    } else if (darkMode) {
         color = '#fafafa';
     } else {
         color = '#000';
     }
     const similarityLevel = similarity * 2.55;
     let similarityColor;
-    if (prefersDarkColorScheme) {
+    if (darkMode) {
         similarityColor = `255,${255-similarityLevel},${255-similarityLevel}`;
     } else {
         similarityColor = `${similarityLevel},0,0`;
@@ -282,28 +281,42 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             storage.setItem("puzzleNumber", puzzleNumber);
         }
 
-        prefersDarkColorScheme = darkModeMql.matches;
-        darkModeMql.onchange = (e) => {
-            prefersDarkColorScheme = !!e.matches;
-            updateGuesses();
-        }
+        document.querySelectorAll(".dialog-close").forEach((el) => {
+            el.replaceChildren($("#x-icon").content.cloneNode(true));
+        });
 
         if (!storage.getItem("readRules")) {
             openRules();
         }
 
         $("#rules-button").addEventListener('click', openRules);
+        $("#settings-button").addEventListener('click', openSettings);
 
-        [$("#rules-underlay"), $("#rules-close")].forEach((el) => {
+        document.querySelectorAll(".dialog-underlay, .dialog-close, #capitalized-link").forEach((el) => {
             el.addEventListener('click', () => {
-                document.body.classList.remove('rules-open');
+                document.body.classList.remove('dialog-open', 'rules-open', 'settings-open');
             });
         });
 
-        $("#rules").addEventListener("click", (event) => {
-            // prevents click from propagating to the underlay, which closes the rules
-            event.stopPropagation();
+        document.querySelectorAll(".dialog").forEach((el) => {
+            el.addEventListener("click", (event) => {
+                // prevents click from propagating to the underlay, which closes the rules
+                event.stopPropagation();
+            });
         });
+
+        $("#dark-mode").addEventListener('click', function(event) {
+            storage.setItem("prefersDarkColorScheme", event.target.checked);
+            darkModeMql.onchange = null;
+            toggleDarkMode(event.target.checked);
+        });
+
+        toggleDarkMode(darkMode);
+
+        if (storage.getItem("prefersDarkColorScheme") === null) {
+            $("#dark-mode").checked = false;
+            $("#dark-mode").indeterminate = true;
+        }
 
         $('#give-up-btn').addEventListener('click', function(event) {
             if (!gameOver) {
@@ -402,8 +415,12 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
     }
 
     function openRules() {
-        document.body.classList.add('rules-open');
+        document.body.classList.add('dialog-open', 'rules-open');
         storage.setItem("readRules", true);
+    }
+
+    function openSettings() {
+        document.body.classList.add('dialog-open', 'settings-open');
     }
 
     function updateGuesses() {
@@ -441,6 +458,29 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
         });
     }
 
+    function toggleDarkMode(on) {
+        document.body.classList[on ? 'add' : 'remove']('dark');
+        const darkModeCheckbox = $("#dark-mode");
+        // this runs before the DOM is ready, so we need to check
+        if (darkModeCheckbox) {
+            darkModeCheckbox.checked = on;
+        }
+    }
+
+    function checkMedia() {
+        const storagePrefersDarkColorScheme = storage.getItem("prefersDarkColorScheme");
+        if (storagePrefersDarkColorScheme === 'true' || storagePrefersDarkColorScheme === 'false') {
+            darkMode = storagePrefersDarkColorScheme === 'true';
+        } else {
+            darkMode = darkModeMql.matches;
+            darkModeMql.onchange = (e) => {
+                darkMode = e.matches;
+                toggleDarkMode(darkMode)
+                updateGuesses();
+            }
+        }
+        toggleDarkMode(darkMode);
+    }
 
     function saveGame(guessCount, winState) {
         // If we are in a tab still open from yesterday, we're done here.
@@ -543,8 +583,13 @@ Stats (since we started recording, on day 23): <br/>
     }
 
     return {
-        init: init
+        init: init,
+        checkMedia: checkMedia,
     };
 })();
-    
+
+// do this when the file loads instead of waiting for DOM to be ready to avoid
+// a flash of unstyled content
+Semantle.checkMedia();
+
 window.addEventListener('load', async () => { Semantle.init() });
