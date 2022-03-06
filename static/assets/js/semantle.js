@@ -281,6 +281,10 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             storage.setItem("puzzleNumber", puzzleNumber);
         }
 
+        document.querySelectorAll(".dialog-close").forEach((el) => {
+            el.replaceChildren($("#x-icon").content.cloneNode(true));
+        });
+
         if (!storage.getItem("readRules")) {
             openRules();
         }

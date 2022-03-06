@@ -51,6 +51,11 @@ h2 {
     padding: 0;
 }
 
+#menu button svg {
+    height: 1.5em;
+    width: 1.5em;
+}
+
 .dialog-underlay {
     background: rgba(0,0,0,.5);
     bottom: 0;
@@ -218,6 +223,10 @@ body.dark {
 
 body.dark a {
     color: #9af;
+}
+
+body.dark #menu button {
+    color: #fafafa;
 }
 
 body.dark .dialog {
