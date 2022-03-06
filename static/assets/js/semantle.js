@@ -228,7 +228,7 @@ let Semantle = (function() {
         if (cache.hasOwnProperty(word)) {
             return cache[word];
         }
-        const url = "/model2/" + secret + "/" + word.replaceAll(" ", "_");
+        const url = "/model2/" + secret + "/" + word.replace(/\ /gi, "_");
         const response = await fetch(url);
         try {
             return await response.json();
