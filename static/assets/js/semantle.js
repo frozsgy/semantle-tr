@@ -308,7 +308,9 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
         $("#dark-mode").addEventListener('click', function(event) {
             storage.setItem("prefersDarkColorScheme", event.target.checked);
             darkModeMql.onchange = null;
-            toggleDarkMode(event.target.checked);
+            darkMode = event.target.checked;
+            toggleDarkMode(darkMode);
+            updateGuesses();
         });
 
         toggleDarkMode(darkMode);
