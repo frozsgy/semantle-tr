@@ -360,6 +360,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             if (caps >= 2 && (caps / guesses.length) > 0.4 && !warnedCaps) {
                 warnedCaps = true;
                 $("#lower").checked = confirm("You're entering a lot of words with initial capital letters.  This is probably not what you want to do, and it's probably caused by your phone keyboard ignoring the autocapitalize setting.  \"Nice\" is a city. \"nice\" is an adjective.  Do you want me to downcase your guesses for you?");
+                storage.setItem("lower", "true");
             }
 
             $('#guess').value = "";
