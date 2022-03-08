@@ -253,6 +253,12 @@ let Semantle = (function() {
         $('#yesterday').innerHTML = `Yesterday's word was <b>"${yesterday}"</b>.`;
         $('#yesterday2').innerHTML = yesterday;
 
+        $('#lower').checked = storage.getItem("lower") == "true";
+
+        $('#lower').onchange = (e) => {
+            storage.setItem("lower", "" + $('#lower').checked);
+        };
+
         try {
             const yesterdayNearby = await getNearby(yesterday);
             const secretBase64 = btoa(unescape(encodeURIComponent(yesterday)));
