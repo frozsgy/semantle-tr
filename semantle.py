@@ -9,7 +9,7 @@ from flask import (
 import struct
 import sqlite3
 import base64
-
+from functools import lru_cache
 
 app = Flask(__name__)
 
@@ -55,26 +55,31 @@ def word(word):
         return jsonify(e)
 
 
+@lru_cache(maxsize=50000)
+def get_model2(secret, word):
+    con = sqlite3.connect("word2vec.db")
+    cur = con.cursor()
+    res = cur.execute(
+        "SELECT vec, percentile FROM word2vec left outer join nearby on nearby.word=? and nearby.neighbor=? WHERE word2vec.word = ?",
+        (secret, word, word),
+    )
+    row = cur.fetchone()
+    if row:
+        row = list(row)
+    con.close()
+    if not row:
+        return ""
+    vec = row[0]
+    result = {"vec": list(struct.unpack("300f", expand_bfloat(vec)))}
+    if row[1]:
+        result["percentile"] = row[1]
+    return jsonify(result)
+
+
 @app.route("/model2/<string:secret>/<string:word>")
 def model2(secret, word):
     try:
-        con = sqlite3.connect("word2vec.db")
-        cur = con.cursor()
-        res = cur.execute(
-            "SELECT vec, percentile FROM word2vec left outer join nearby on nearby.word=? and nearby.neighbor=? WHERE word2vec.word = ?",
-            (secret, word, word),
-        )
-        row = cur.fetchone()
-        if row:
-            row = list(row)
-        con.close()
-        if not row:
-            return ""
-        vec = row[0]
-        result = {"vec": list(struct.unpack("300f", expand_bfloat(vec)))}
-        if row[1]:
-            result["percentile"] = row[1]
-        return jsonify(result)
+        return get_model2(secret, word)
     except Exception as e:
         print(e)
         return jsonify(e)
