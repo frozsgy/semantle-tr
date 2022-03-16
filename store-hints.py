@@ -38,7 +38,7 @@ with con:
         )
 
         top = neighbors[-2][0]
-        top10 = neighbors[-12][0]
+        top10 = neighbors[-11][0]
         rest = neighbors[0][0]
         con.execute(
             "insert into similarity_range (word, top, top10, rest) values (?, ?, ?, ?)",
