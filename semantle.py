@@ -124,7 +124,6 @@ def nearby(word):
         return jsonify(e)
 
 @app.route("/nearby_1k")
-@app.route("/nearby_1k/")
 def nearby_1k():
     try:
         word_b64 = request.args.get('word')
