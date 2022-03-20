@@ -7,15 +7,25 @@ services:
       - web_nw
   nginx:
     container_name: semantle-tr-nginx
-    image: "nginx:1.13.5"
+    image: nginx:1.15-alpine
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./conf.d:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     networks:
       - web_nw
     depends_on:
       - semantle-tr
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 networks:
   web_nw:
     driver: bridge
