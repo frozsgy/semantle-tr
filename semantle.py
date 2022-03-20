@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from flask import (
     Flask,
     request,
@@ -121,10 +123,11 @@ def nearby(word):
         print(e)
         return jsonify(e)
 
-
-@app.route("/nearby_1k/<string:word_b64>")
-def nearby_1k(word_b64):
+@app.route("/nearby_1k")
+@app.route("/nearby_1k/")
+def nearby_1k():
     try:
+        word_b64 = request.args.get('word')
         word = base64.b64decode(word_b64).decode("utf-8")
 
         con = sqlite3.connect("word2vec.db")
@@ -171,4 +174,4 @@ def add_header(response):
 if __name__ == "__main__":
     import sqlite3
 
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5005)

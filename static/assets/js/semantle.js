@@ -16,11 +16,10 @@ let latestGuess = undefined;
 let guessed = new Set();
 let guessCount = 0;
 let model = null;
-const now = Date.now();
+const now = Date.now() + 10800000;
 const today = Math.floor(now / 86400000);
-const initialDay = 19021;
+const initialDay = 19070;
 const puzzleNumber = (today - initialDay) % secretWords.length;
-const handleStats = puzzleNumber >= 24;
 const yesterdayPuzzleNumber = (today - initialDay + secretWords.length - 1) % secretWords.length;
 const storage = window.localStorage;
 let caps = 0;
@@ -90,10 +89,10 @@ function share() {
     const copied = ClipboardJS.copy(text);
 
     if (copied) {
-        alert("Copied to clipboard");
+        alert("Panoya kopyalandı");
     }
     else {
-        alert("Failed to copy to clipboard");
+        alert("Panoya kopyalama başarısız oldu");
     }
 }
 
@@ -125,15 +124,15 @@ function select(word, secretVec) {
 }
 
 function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
-    let percentileText = "(cold)";
+    let percentileText = "(soğuk)";
     let progress = "";
     let cls = "";
     if (similarity >= similarityStory.rest * 100) {
-        percentileText = '<span class="weirdWord">????<span class="tooltiptext">Unusual word found!  This word is not in the list of &quot;normal&quot; words that we use for the top-1000 list, but it is still similar! (Is it maybe capitalized?)</span></span>';
+        percentileText = '<span class="weirdWord">????<span class="tooltiptext">Alışılmışın dışında sözcük bulundu! Bu sözcük yakın sözcükler için kullandığımız listede olmamasına rağmen yine de ilişkili! (Bir kısaltma ya da özel isim olabilir mi?)</span></span>';
     }
     if (percentile) {
         if (percentile == 1000) {
-            percentileText = "FOUND!";
+            percentileText = "BULUNDU!";
         } else {
             cls = "close";
             percentileText = `<span class="percentile">${percentile}/1000</span>&nbsp;`;
@@ -164,23 +163,23 @@ function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
 
 function updateLocalTime() {
     const now = new Date();
-    now.setUTCHours(24, 0, 0, 0);
+    now.setUTCHours(21, 0, 0, 0);
 
-    $('#localtime').innerHTML = `or ${now.getHours()}:00 your time`;
+    $('#localtime').innerHTML = ` ${now.getHours()}:00'a karşılık geliyor`;
 }
 
 function solveStory(guesses, puzzleNumber) {
     const guess_count = guesses.length;
     if (guess_count == 0) {
-        return `I gave up on Semantle ${puzzleNumber} without even guessing once.`;
+        return `Semantle Türkçe ${puzzleNumber} numaralı bulmacada tek bir tahminde bile bulunmadan pes ettim.`;
     }
 
     if (guess_count == 1) {
-        return `I got Semantle ${puzzleNumber} on my first guess!`;
+        return `Semantle Türkçe ${puzzleNumber} numaralı bulmacayı ilk tahminimde çözdüm!`;
     }
 
     let describe = function(similarity, percentile) {
-        let out = `had a similarity of ${similarity.toFixed(2)}`;
+        let out = `${similarity.toFixed(2)} idi`;
         if (percentile) {
             out += ` (${percentile}/1000)`;
         }
@@ -191,7 +190,7 @@ function solveStory(guesses, puzzleNumber) {
     guesses_chrono.sort(function(a, b){return a[3]-b[3]});
 
     let [similarity, old_guess, percentile, guess_number] = guesses_chrono[0];
-    let first_guess = `My first guess ${describe(similarity, percentile)}.`;
+    let first_guess = `İlk tahminimin benzerlik skoru ${describe(similarity, percentile)}. `;
     let first_guess_in_top = !!percentile;
 
     let first_hit = '';
@@ -199,7 +198,7 @@ function solveStory(guesses, puzzleNumber) {
         for (let entry of guesses_chrono) {
             [similarity, old_guess, percentile, guess_number] = entry;
             if (percentile) {
-                first_hit = `  My first word in the top 1000 was at guess #${guess_number}.  `;
+                first_hit = `En yakın 1000'e girebilen ilk tahminim ${guess_number}. tahminimdi. `;
                 break;
             }
         }
@@ -207,9 +206,9 @@ function solveStory(guesses, puzzleNumber) {
 
     const penultimate_guess = guesses_chrono[guesses_chrono.length - 2];
     [similarity, old_guess, percentile, guess_number] = penultimate_guess;
-    const penultimate_guess_msg = `My penultimate guess ${describe(similarity, percentile)}.`;
+    const penultimate_guess_msg = `Sondan bir önceki tahminimin benzerlik skoru ise ${describe(similarity, percentile)}. `;
 
-    return `I solved Semantle #${puzzleNumber} in ${guess_count} guesses. ${first_guess}${first_hit}${penultimate_guess_msg} https://semantle.novalis.org/`;
+    return `Semantle Türkçe ${puzzleNumber} numaralı bulmacayı ${guess_count} tahminde çözdüm. ${first_guess}${first_hit}${penultimate_guess_msg}https://semantle.ozanalpay.com/`;
 }
 
 let Semantle = (function() {
@@ -250,7 +249,7 @@ let Semantle = (function() {
         secret = secretWords[puzzleNumber].toLowerCase();
         const yesterday = secretWords[yesterdayPuzzleNumber].toLowerCase();
 
-        $('#yesterday').innerHTML = `Yesterday's word was <b>"${yesterday}"</b>.`;
+        $('#yesterday').innerHTML = `Dünün sözcüğü: <b>"${yesterday}"</b>.`;
         $('#yesterday2').innerHTML = yesterday;
 
         $('#lower').checked = storage.getItem("lower") == "true";
@@ -262,20 +261,15 @@ let Semantle = (function() {
         try {
             const yesterdayNearby = await getNearby(yesterday);
             const secretBase64 = btoa(unescape(encodeURIComponent(yesterday)));
-            $('#nearbyYesterday').innerHTML = `${yesterdayNearby.join(", ")}, in descending order of closensess. <a href="nearby_1k/${secretBase64}">More?</a>`;
+            $('#nearbyYesterday').innerHTML = `Azalan yakınlık sırasına göre: ${yesterdayNearby.join(", ")}. <a href="nearby_1k?word=${secretBase64}">Devamını Gör</a>`;
         } catch (e) {
-            $('#nearbyYesterday').innerHTML = `Coming soon!`;
+            $('#nearbyYesterday').innerHTML = `Yakında!`;
         }
         updateLocalTime();
 
         try {
             similarityStory = await getSimilarityStory(secret);
-            $('#similarity-story').innerHTML = `
-Today is puzzle number <b>${puzzleNumber}</b>. The nearest word has a similarity of
-<b>${(similarityStory.top * 100).toFixed(2)}</b>, the tenth-nearest has a similarity of
-${(similarityStory.top10 * 100).toFixed(2)} and the one thousandth nearest word has a
-similarity of ${(similarityStory.rest * 100).toFixed(2)}.
-`;
+            $('#similarity-story').innerHTML = `Bugünün oyun numarası <b>${puzzleNumber}</b>. En yakın sözcüğün benzerlik skoru <b>${(similarityStory.top * 100).toFixed(2)}</b>, en yakın onuncu sözcüğün yakınlık skoru ${(similarityStory.top10 * 100).toFixed(2)}, ve en yakın bininci sözcüğün yakınlık skoru ise ${(similarityStory.rest * 100).toFixed(2)}.`;
         } catch {
             // we can live without this in the event that something is broken
         }
@@ -329,7 +323,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
         $('#give-up-btn').addEventListener('click', function(event) {
             if (!gameOver) {
-                if (confirm("Are you sure you want to give up?")) {
+                if (confirm("Pes etmek istediğinize emin misiniz?")) {
                     endGame(false, true);
                 }
             }
@@ -350,16 +344,12 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
                 guess = guess.toLowerCase();
             }
 
-            if (typeof unbritish !== 'undefined' && unbritish.hasOwnProperty(guess)) {
-                guess = unbritish[guess];
-            }
-
             if (guess[0].toLowerCase() != guess[0]) {
                 caps += 1;
             }
             if (caps >= 2 && (caps / guesses.length) > 0.4 && !warnedCaps) {
                 warnedCaps = true;
-                $("#lower").checked = confirm("You're entering a lot of words with initial capital letters.  This is probably not what you want to do, and it's probably caused by your phone keyboard ignoring the autocapitalize setting.  \"Nice\" is a city. \"nice\" is an adjective.  Do you want me to downcase your guesses for you?");
+                $("#lower").checked = confirm("Girdiğiniz sözcüklerin ilk harfleri büyük gözüküyor. Bu bazı kelimelerde sorunlara yol açabiliyor, bunu otomatik olarak düzeltmemi ister misiniz?");
                 storage.setItem("lower", "true");
             }
 
@@ -367,7 +357,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
             const guessData = await getModel(guess);
             if (!guessData) {
-                $('#error').textContent = `I don't know the word ${guess}.`;
+                $('#error').textContent = `${guess} diye bir sözcük veritabanımda kayıtlı değil.`;
                 return false;
             }
 
@@ -387,13 +377,11 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
                 const newEntry = [similarity, guess, percentile, guessCount];
                 guesses.push(newEntry);
 
-                if (handleStats) {
-                    const stats = getStats();
-                    if (!gameOver) {
-                        stats['totalGuesses'] += 1;
-                    }
-                    storage.setItem('stats', JSON.stringify(stats));
+                const stats = getStats();
+                if (!gameOver) {
+                    stats['totalGuesses'] += 1;
                 }
+                storage.setItem('stats', JSON.stringify(stats));
             }
             guesses.sort(function(a, b){return b[0]-a[0]});
 
@@ -440,7 +428,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
     }
 
     function updateGuesses() {
-        let inner = `<tr><th id="chronoOrder">#</th><th id="alphaOrder">Guess</th><th id="similarityOrder">Similarity</th><th>Getting close?</th></tr>`;
+        let inner = `<tr><th id="chronoOrder">#</th><th id="alphaOrder">Tahmin</th><th id="similarityOrder">Benzerlik</th><th>Yakın mı?</th></tr>`;
         /* This is dumb: first we find the most-recent word, and put
            it at the top.  Then we do the rest. */
         for (let entry of guesses) {
@@ -544,25 +532,24 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
     function endGame(won, countStats) {
         let stats;
-        if (handleStats) {
-            stats = getStats();
-            if (countStats) {
-                const onStreak = (stats['lastEnd'] == puzzleNumber - 1);
 
-                stats['lastEnd'] = puzzleNumber;
-                if (won) {
-                    if (onStreak) {
-                        stats['winStreak'] += 1;
-                    } else {
-                    stats['winStreak'] = 1;
-                    }
-                    stats['wins'] += 1;
+        stats = getStats();
+        if (countStats) {
+            const onStreak = (stats['lastEnd'] == puzzleNumber - 1);
+
+            stats['lastEnd'] = puzzleNumber;
+            if (won) {
+                if (onStreak) {
+                    stats['winStreak'] += 1;
                 } else {
-                    stats['winStreak'] = 0;
-                    stats['giveups'] += 1;
+                stats['winStreak'] = 1;
                 }
-                storage.setItem("stats", JSON.stringify(stats));
+                stats['wins'] += 1;
+            } else {
+                stats['winStreak'] = 0;
+                stats['giveups'] += 1;
             }
+            storage.setItem("stats", JSON.stringify(stats));
         }
 
         $('#give-up-btn').style = "display:none;";
@@ -571,27 +558,26 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
         const secretBase64 = btoa(unescape(encodeURIComponent(secret)));
         let response;
         if (won) {
-            response = `<p><b>You found it in ${guesses.length}!  The secret word is ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words. <a href="javascript:share();">Share</a> and play again tomorrow.  You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.</p>`
+            response = `<p><b>${guesses.length}. tahminde günün sözcüğünü (${secret}) buldun!</b>. Eğer başka sözcüklerle olan benzerliği merak ediyorsan, kelime girmeye devam edebilirsin. Sonuçlarını paylaşmak istersen <a href="javascript:share();">buraya</a> tıklayabilirsin. Bugünün sözcüğüne en yakın sözcükleri görmek istersen <a href="nearby_1k?word=${secretBase64}">buraya</a> tıklayabilirsin. Yarın görüşmek üzere! </p>`
         } else {
-            response = `<p><b>You gave up!  The secret word is: ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words.  You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.</p>`;
+            response = `<p><b>Pes ettin! Günün sözcüğü ${secret}</b>. Eğer başka sözcüklerle olan benzerliği merak ediyorsan, kelime girmeye devam edebilirsin. Bugünün sözcüğüne en yakın sözcükleri görmek istersen <a href="nearby_1k?word=${secretBase64}">buraya</a> tıklayabilirsin. Yarın görüşmek üzere! </p>`;
         }
 
-        if (handleStats) {
-            const totalGames = stats['wins'] + stats['giveups'] + stats['abandons'];
-            response += `<br/>
-Stats (since we started recording, on day 23): <br/>
+        const totalGames = stats['wins'] + stats['giveups'] + stats['abandons'];
+        response += `<br/>
+İstatistikler: <br/>
 <table>
-<tr><th>First game:</th><td>${stats['firstPlay']}</td></tr>
-<tr><th>Total days played:</th><td>${totalGames}</td></tr>
-<tr><th>Wins:</th><td>${stats['wins']}</td></tr>
-<tr><th>Win streak:</th><td>${stats['winStreak']}</td></tr>
-<tr><th>Give-ups:</th><td>${stats['giveups']}</td></tr>
-<tr><th>Did not finish:</th><td>${stats['abandons']}</td></tr>
-<tr><th>Total guesses across all games:</th><td>${stats['totalGuesses']}</td></tr>
-<tr><th>Average guesses across all games:</th><td>${(stats['totalGuesses'] / totalGames).toFixed(2)}</td></tr>
+<tr><th>İlk oyun:</th><td>${stats['firstPlay']}</td></tr>
+<tr><th>Oynanan gün sayısı: </th><td>${totalGames}</td></tr>
+<tr><th>Kazanılan oyun sayısı:</th><td>${stats['wins']}</td></tr>
+<tr><th>Aralıksız kazanılan oyun sayısı:</th><td>${stats['winStreak']}</td></tr>
+<tr><th>Pes edilen oyun sayısı:</th><td>${stats['giveups']}</td></tr>
+<tr><th>Bitirilmeyen oyun sayısı:</th><td>${stats['abandons']}</td></tr>
+<tr><th>Bugüne kadarki toplam tahmin sayısı:</th><td>${stats['totalGuesses']}</td></tr>
+<tr><th>Bugüne kadarki ortalama tahmin sayısı:</th><td>${(stats['totalGuesses'] / totalGames).toFixed(2)}</td></tr>
 </table>
 `;
-        }
+
         $('#response').innerHTML = response;
 
         if (countStats) {
