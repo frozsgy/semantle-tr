@@ -5,3 +5,5 @@ nearest.pickle
 venv/
 .idea/
 *.xml.bz2
+wikipedia-out.txt
+wikipedia-vector.bin
