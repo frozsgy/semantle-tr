@@ -1,22 +1,31 @@
-So, this is sort of hacked together from a lot of data sources and the
-code is a mess.  Here's a hello world of how to get up and running.
+# Semantle Türkçe 
 
-1. Install Python requirements using `pip install -r requirements.txt`.
+This repository contains the Turkish version of [Semantle](https://semantle.novalis.org/).
 
-2. Download `GoogleNews-vectors-negative300.bin.gz` from [here](https://code.google.com/archive/p/word2vec/), and extract it into the parent directory of this project.
+## Initial Setup
 
-3. Run `python dump-vecs.py` to create an SQLite database and store the main vectors.
+- Create a virtual environment and install required Python modules from `requirements.txt`. 
+- Use the `word2vec/train.sh` file to train a Turkish Word2Vec model using the Wikipedia corpus.
+- Run `python dump-vecs.py` to initialize the SQLite database with vectors.
+- Run `python dump-hints.py` to create hints pickle.
+- Run `python store-hints.py` to import the hints pickle to the database.
 
-4. Run `python dump-hints.py` to create a hints pickle. Wait a very long time.
+## Deployment & Running the App
 
-5. Run `python store-hints.py` to import the pickle into the DB.
+- Run `docker-compose up -d`. The project should be up and running at HTTP port 80.
 
-6. Run `python british.py` to figure out which British words have been respelled in word2vec, so that we can respell them for users. They
-come from [here](https://github.com/hyperreality/American-British-English-Translator).
+## Notes
 
-7. Run `python semantle.py` for the web server.
+This project was forked from the original [Semantle](https://gitlab.com/novalis_dt/semantle) repository and some modifications to the `dump-hints.py` file were cherry picked from the [Semantle-es](https://github.com/A12Studios/semantle-es) repository.
 
-Formatting
-==========
+## Known Bugs
 
-`black .` to reformat all Python files
+- Since Turkish is an agglutinative language, while looking for similar words you will see lots of words with suffixes. I'm planning to clean up the corpus to work with lemmas or stems and improve the performance.
+
+## Want to Contribute?
+
+Go ahead, they're always appreciated! 
+
+---
+
+Made in Ankara with 💙
