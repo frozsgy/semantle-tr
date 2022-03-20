@@ -2,5 +2,6 @@ word2vec.db
 word2vec.db-shm
 word2vec.db-wal
 nearest.pickle
-static/assets/js/british_spellings.js
-.DS_Store
+venv/
+.idea/
+*.xml.bz2
