@@ -33,26 +33,26 @@ function $(q) {
 }
 
 function mag(a) {
-    return Math.sqrt(a.reduce(function(sum, val) {
+    return Math.sqrt(a.reduce(function (sum, val) {
         return sum + val * val;
     }, 0));
 }
 
 function dot(f1, f2) {
-    return f1.reduce(function(sum, a, idx) {
-        return sum + a*f2[idx];
+    return f1.reduce(function (sum, a, idx) {
+        return sum + a * f2[idx];
     }, 0);
 }
 
 function getCosSim(f1, f2) {
-    return dot(f1,f2)/(mag(f1)*mag(f2));
+    return dot(f1, f2) / (mag(f1) * mag(f2));
 }
 
 
 function plus(v1, v2) {
     const out = [];
     for (let i = 0; i < v1.length; i++) {
-            out.push(v1[i] + v2[i]);
+        out.push(v1[i] + v2[i]);
     }
     return out;
 }
@@ -66,7 +66,7 @@ function minus(v1, v2) {
 }
 
 
-function scale (v, s) {
+function scale(v, s) {
     const out = [];
     for (let i = 0; i < v.length; i++) {
         out.push(v[i] * s);
@@ -78,8 +78,8 @@ function scale (v, s) {
 function project_along(v1, v2, t) {
     const v = minus(v2, v1);
     const num = dot(minus(t, v1), v);
-    const denom = dot(v,v);
-    return num/denom;
+    const denom = dot(v, v);
+    return num / denom;
 }
 
 function share() {
@@ -90,8 +90,7 @@ function share() {
 
     if (copied) {
         alert("Panoya kopyalandı");
-    }
-    else {
+    } else {
         alert("Panoya kopyalama başarısız oldu");
     }
 }
@@ -137,7 +136,7 @@ function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
             cls = "close";
             percentileText = `<span class="percentile">${percentile}/1000</span>&nbsp;`;
             progress = ` <span class="progress-container">
-<span class="progress-bar" style="width:${percentile/10}%">&nbsp;</span>
+<span class="progress-bar" style="width:${percentile / 10}%">&nbsp;</span>
 </span>`;
         }
     }
@@ -152,7 +151,7 @@ function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
     const similarityLevel = similarity * 2.55;
     let similarityColor;
     if (darkMode) {
-        similarityColor = `255,${255-similarityLevel},${255-similarityLevel}`;
+        similarityColor = `255,${255 - similarityLevel},${255 - similarityLevel}`;
     } else {
         similarityColor = `${similarityLevel},0,0`;
     }
@@ -178,7 +177,7 @@ function solveStory(guesses, puzzleNumber) {
         return `Semantle Türkçe ${puzzleNumber} numaralı bulmacayı ilk tahminimde çözdüm!`;
     }
 
-    let describe = function(similarity, percentile) {
+    let describe = function (similarity, percentile) {
         let out = `${similarity.toFixed(2)} idi`;
         if (percentile) {
             out += ` (${percentile}/1000)`;
@@ -187,7 +186,9 @@ function solveStory(guesses, puzzleNumber) {
     }
 
     const guesses_chrono = guesses.slice();
-    guesses_chrono.sort(function(a, b){return a[3]-b[3]});
+    guesses_chrono.sort(function (a, b) {
+        return a[3] - b[3]
+    });
 
     let [similarity, old_guess, percentile, guess_number] = guesses_chrono[0];
     let first_guess = `İlk tahminimin benzerlik skoru ${describe(similarity, percentile)}. `;
@@ -211,7 +212,7 @@ function solveStory(guesses, puzzleNumber) {
     return `Semantle Türkçe ${puzzleNumber} numaralı bulmacayı ${guess_count} tahminde çözdüm. ${first_guess}${first_hit}${penultimate_guess_msg}https://semantle.ozanalpay.com/`;
 }
 
-let Semantle = (function() {
+let Semantle = (function () {
     async function getSimilarityStory(secret) {
         const url = "/similarity/" + secret;
         const response = await fetch(url);
@@ -236,7 +237,7 @@ let Semantle = (function() {
     }
 
     async function getNearby(word) {
-        const url = "/nearby/" + word ;
+        const url = "/nearby/" + word;
         const response = await fetch(url);
         try {
             return await response.json();
@@ -306,7 +307,7 @@ let Semantle = (function() {
             });
         });
 
-        $("#dark-mode").addEventListener('click', function(event) {
+        $("#dark-mode").addEventListener('click', function (event) {
             storage.setItem("prefersDarkColorScheme", event.target.checked);
             darkModeMql.onchange = null;
             darkMode = event.target.checked;
@@ -321,7 +322,7 @@ let Semantle = (function() {
             $("#dark-mode").indeterminate = true;
         }
 
-        $('#give-up-btn').addEventListener('click', function(event) {
+        $('#give-up-btn').addEventListener('click', function (event) {
             if (!gameOver) {
                 if (confirm("Pes etmek istediğinize emin misiniz?")) {
                     endGame(false, true);
@@ -329,7 +330,7 @@ let Semantle = (function() {
             }
         });
 
-        $('#form').addEventListener('submit', async function(event) {
+        $('#form').addEventListener('submit', async function (event) {
             event.preventDefault();
             if (secretVec === null) {
                 secretVec = (await getModel(secret)).vec;
@@ -383,7 +384,9 @@ let Semantle = (function() {
                 }
                 storage.setItem('stats', JSON.stringify(stats));
             }
-            guesses.sort(function(a, b){return b[0]-a[0]});
+            guesses.sort(function (a, b) {
+                return b[0] - a[0]
+            });
 
             if (!gameOver) {
                 saveGame(-1, -1);
@@ -446,17 +449,23 @@ let Semantle = (function() {
         }
         $('#guesses').innerHTML = inner;
         $('#chronoOrder').addEventListener('click', event => {
-            guesses.sort(function(a, b){return chrono_forward * (a[3]-b[3])});
+            guesses.sort(function (a, b) {
+                return chrono_forward * (a[3] - b[3])
+            });
             chrono_forward *= -1;
             updateGuesses();
         });
         $('#alphaOrder').addEventListener('click', event => {
-            guesses.sort(function(a, b){return a[1].localeCompare(b[1])});
+            guesses.sort(function (a, b) {
+                return a[1].localeCompare(b[1])
+            });
             chrono_forward = 1;
             updateGuesses();
         });
         $('#similarityOrder').addEventListener('click', event => {
-            guesses.sort(function(a, b){return b[0]-a[0]});
+            guesses.sort(function (a, b) {
+                return b[0] - a[0]
+            });
             chrono_forward = 1;
             updateGuesses();
         });
@@ -490,7 +499,9 @@ let Semantle = (function() {
         // If we are in a tab still open from yesterday, we're done here.
         // Don't save anything because we may overwrite today's game!
         let savedPuzzleNumber = storage.getItem("puzzleNumber");
-        if (savedPuzzleNumber != puzzleNumber) { return }
+        if (savedPuzzleNumber != puzzleNumber) {
+            return
+        }
 
         storage.setItem("winState", winState);
         storage.setItem("guesses", JSON.stringify(guesses));
@@ -500,16 +511,16 @@ let Semantle = (function() {
         const oldStats = storage.getItem("stats");
         if (oldStats == null) {
             const stats = {
-                'firstPlay' : puzzleNumber,
-                'lastEnd' : puzzleNumber - 1,
-                'lastPlay' : puzzleNumber,
-                'winStreak' : 0,
-                'playStreak' : 0,
-                'totalGuesses' : 0,
-                'wins' : 0,
-                'giveups' : 0,
-                'abandons' : 0,
-                'totalPlays' : 0,
+                'firstPlay': puzzleNumber,
+                'lastEnd': puzzleNumber - 1,
+                'lastPlay': puzzleNumber,
+                'winStreak': 0,
+                'playStreak': 0,
+                'totalGuesses': 0,
+                'wins': 0,
+                'giveups': 0,
+                'abandons': 0,
+                'totalPlays': 0,
             };
             storage.setItem("stats", JSON.stringify(stats));
             return stats;
@@ -542,7 +553,7 @@ let Semantle = (function() {
                 if (onStreak) {
                     stats['winStreak'] += 1;
                 } else {
-                stats['winStreak'] = 1;
+                    stats['winStreak'] = 1;
                 }
                 stats['wins'] += 1;
             } else {
@@ -595,4 +606,6 @@ let Semantle = (function() {
 // a flash of unstyled content
 Semantle.checkMedia();
 
-window.addEventListener('load', async () => { Semantle.init() });
+window.addEventListener('load', async () => {
+    Semantle.init()
+});
