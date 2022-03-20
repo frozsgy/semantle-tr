@@ -1,8 +1,6 @@
+import pickle
 import sqlite3
 
-import pickle
-
-from more_itertools import chunked
 import tqdm
 
 con = sqlite3.connect("word2vec.db")
@@ -19,7 +17,6 @@ cur.execute(
     (word text PRIMARY KEY, top float, top10 float, rest float)"""
 )
 con.commit()
-
 
 with open(b"nearest.pickle", "rb") as f:
     nearest = pickle.load(f)
