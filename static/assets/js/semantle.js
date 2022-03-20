@@ -209,7 +209,7 @@ function solveStory(guesses, puzzleNumber) {
     [similarity, old_guess, percentile, guess_number] = penultimate_guess;
     const penultimate_guess_msg = `Sondan bir önceki tahminimin benzerlik skoru ise ${describe(similarity, percentile)}. `;
 
-    return `Semantle Türkçe ${puzzleNumber} numaralı bulmacayı ${guess_count} tahminde çözdüm. ${first_guess}${first_hit}${penultimate_guess_msg}https://semantle.ozanalpay.com/`;
+    return `Semantle Türkçe ${puzzleNumber} numaralı bulmacayı ${guess_count} tahminde çözdüm. ${first_guess}${first_hit}${penultimate_guess_msg}http://semantle.ozanalpay.com/`;
 }
 
 let Semantle = (function () {
