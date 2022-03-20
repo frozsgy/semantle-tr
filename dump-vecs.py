@@ -1,27 +1,20 @@
-# gensim monkeypatch
 import collections.abc
-
-collections.Mapping = collections.abc.Mapping
+import sqlite3
 
 import gensim.models.keyedvectors as word2vec
 import numpy as np
-
-import sqlite3
 import tqdm
-
 from more_itertools import chunked
 
-model = word2vec.KeyedVectors.load_word2vec_format(
-    "../GoogleNews-vectors-negative300.bin", binary=True
-)
+collections.Mapping = collections.abc.Mapping
+
+model = word2vec.KeyedVectors.load_word2vec_format("word2vec/wikipedia-vector.bin", binary=True)
 
 con = sqlite3.connect("word2vec.db")
 con.execute("PRAGMA journal_mode=WAL")
 cur = con.cursor()
 cur.execute("""create table if not exists word2vec (word text PRIMARY KEY, vec blob)""")
 con.commit()
-
-# import pdb;pdb.set_trace()
 
 
 def bfloat(vec):
@@ -32,9 +25,6 @@ def bfloat(vec):
     vec.dtype = np.int16
     return vec[1::2].tobytes()
 
-
-# many weird words contain #, _ for multi-word
-# some have e-mail addresses, start with numbers, :-), lots of === signs, ...
 
 CHUNK_SIZE = 1111
 con.execute("DELETE FROM word2vec")
