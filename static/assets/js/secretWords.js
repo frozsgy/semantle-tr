@@ -815,6 +815,8 @@ secretWords = [
     "kurum",
     "tarih",
     "tarih",
+    "tarih",
+    "tarih",
     "bazen",
     "onlar",
     "okul",
