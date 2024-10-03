@@ -928,7 +928,7 @@ secretWords = [
     "günlük",
     "mekân",
     "geri",
-    "Tanrı",
+    "tanrı",
     "sene",
     "belirtmek",
     "aslında",
