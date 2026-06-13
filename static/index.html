@@ -29,6 +29,13 @@
 <script src="assets/js/semantle.js"></script>
 <header>
     <h2>Semantle Türkçe</h2>
+    <div id="archive-selector">
+        <input id="archive-input" list="archive-list"
+               placeholder="Oyun arşivi"
+               autocomplete="off" autocorrect="off"
+               aria-label="Arşivden seç">
+        <datalist id="archive-list"></datalist>
+    </div>
     <nav id="menu">
         <button id="rules-button" aria-label="Rules">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -46,6 +53,7 @@
         </button>
     </nav>
 </header>
+<div id="archive-banner" style="display:none;"></div>
 <div class="dialog-underlay" id="rules-underlay">
     <div class="dialog" id="rules" aria-labelledby="rules-heading" aria-modal="true" role="dialog">
         <button class="dialog-close" id="rules-close" aria-label="Kapat">&times;</button>
@@ -135,8 +143,7 @@
         ve <a href="https://cemantix.herokuapp.com/">Fransızca</a> dillerinde de oynayabilirsiniz.</p>
     <p> S: Günün sözcüğü nasıl seçiliyor? </p>
     <p> C: Wiktionary'deki <a href="https://en.wiktionary.org/wiki/Wiktionary:Frequency_lists/Turkish">en popüler 1000
-        Türkçe Sözcük</a> listesinin sırasını karıştırarak oyuna ekledim. Yaklaşık 3 yıl boyunca bir sorunla
-        karşılaşmadan Semantle Türkçe oynamaya devam edebileceğinizi garanti ediyorum :)</p>
+        Türkçe Sözcük</a> listesinin sırasını karıştırarak oyuna ekledim. 28 Kasım 2024'ten sonra oyun başa dönecek şekilde programlandı.</p>
 
     <div>Orijinal versiyonu <a href="mailto:novalis@novalis.org">David Turner</a> tarafından yapılmış olup, <a
             href="https://twitter.com/moa_42">Mustafa Ozan Alpay</a> tarafından Türkçeye uyarlanmıştır. Word2Vec veri

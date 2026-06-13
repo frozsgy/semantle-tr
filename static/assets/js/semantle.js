@@ -22,6 +22,19 @@ const initialDay = 19070;
 const puzzleNumber = (today - initialDay) % secretWords.length;
 const yesterdayPuzzleNumber = (today - initialDay + secretWords.length - 1) % secretWords.length;
 const storage = window.localStorage;
+const _urlParams = new URLSearchParams(window.location.search);
+const archiveParam = _urlParams.get('archive');
+const _todayOffset = today - initialDay;
+const archiveOffset = (
+    archiveParam !== null &&
+    Number.isInteger(+archiveParam) &&
+    +archiveParam >= 0 &&
+    +archiveParam < _todayOffset
+) ? +archiveParam : null;
+const isArchiveMode = archiveOffset !== null;
+const activePuzzleNumber = isArchiveMode
+    ? archiveOffset % secretWords.length
+    : puzzleNumber;
 let caps = 0;
 let warnedCaps = 0;
 let chrono_forward = 1;
@@ -82,10 +95,53 @@ function project_along(v1, v2, t) {
     return num / denom;
 }
 
+function archiveOffsetToLabel(offset) {
+    const d = new Date((initialDay + offset) * 86400000);
+    const day   = String(d.getUTCDate()).padStart(2, '0');
+    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+    return `#${offset % secretWords.length} - ${day}.${month}.${d.getUTCFullYear()}`;
+}
+
+function archiveKey(kind) {
+    return `archive_${archiveOffset}_${kind}`;
+}
+
+function populateArchiveDropdown() {
+    const datalist = document.getElementById('archive-list');
+    const input    = document.getElementById('archive-input');
+    if (!datalist || !input) return;
+
+    for (let i = _todayOffset - 1; i >= 0; i--) {
+        const opt = document.createElement('option');
+        opt.value = archiveOffsetToLabel(i);
+        opt.dataset.offset = i;
+        datalist.appendChild(opt);
+    }
+
+    if (isArchiveMode) {
+        input.value = archiveOffsetToLabel(archiveOffset);
+    }
+
+    input.addEventListener('change', function () {
+        const raw = input.value.trim();
+        const opts = datalist.querySelectorAll('option');
+        for (const o of opts) {
+            if (o.value === raw) {
+                window.location.href = `/?archive=${o.dataset.offset}`;
+                return;
+            }
+        }
+        input.value = isArchiveMode ? archiveOffsetToLabel(archiveOffset) : '';
+    });
+}
+
 function share() {
     // We use the stored guesses here, because those are not updated again
     // once you win -- we don't want to include post-win guesses here.
-    const text = solveStory(JSON.parse(storage.getItem("guesses")), puzzleNumber);
+    const savedGuesses = isArchiveMode
+        ? storage.getItem(archiveKey('guesses'))
+        : storage.getItem("guesses");
+    const text = solveStory(JSON.parse(savedGuesses), activePuzzleNumber);
     const copied = ClipboardJS.copy(text);
 
     if (copied) {
@@ -247,11 +303,18 @@ let Semantle = (function () {
     }
 
     async function init() {
-        secret = secretWords[puzzleNumber].toLowerCase();
+        secret = secretWords[activePuzzleNumber].toLowerCase();
         const yesterday = secretWords[yesterdayPuzzleNumber].toLowerCase();
 
         $('#yesterday').innerHTML = `Dünün sözcüğü: <b>"${yesterday}"</b>.`;
         $('#yesterday2').innerHTML = yesterday;
+
+        if (isArchiveMode) {
+            $('#archive-banner').style.display = 'block';
+            $('#archive-banner').innerHTML =
+                `Arşiv modu: <strong>${archiveOffsetToLabel(archiveOffset)}</strong> &nbsp;` +
+                `<a href="/">Bugünkü bulmacaya dön &rarr;</a>`;
+        }
 
         $('#lower').checked = storage.getItem("lower") == "true";
 
@@ -270,16 +333,12 @@ let Semantle = (function () {
 
         try {
             similarityStory = await getSimilarityStory(secret);
-            $('#similarity-story').innerHTML = `Bugünün oyun numarası <b>${puzzleNumber}</b>. En yakın sözcüğün benzerlik skoru <b>${(similarityStory.top * 100).toFixed(2)}</b>, en yakın onuncu sözcüğün yakınlık skoru ${(similarityStory.top10 * 100).toFixed(2)}, ve en yakın bininci sözcüğün yakınlık skoru ise ${(similarityStory.rest * 100).toFixed(2)}.`;
+            const puzzleLabel = isArchiveMode
+                ? `Arşiv bulmacası <b>${activePuzzleNumber}</b> (${archiveOffsetToLabel(archiveOffset)})`
+                : `Bugünün oyun numarası <b>${puzzleNumber}</b>`;
+            $('#similarity-story').innerHTML = `${puzzleLabel}. En yakın sözcüğün benzerlik skoru <b>${(similarityStory.top * 100).toFixed(2)}</b>, en yakın onuncu sözcüğün yakınlık skoru ${(similarityStory.top10 * 100).toFixed(2)}, ve en yakın bininci sözcüğün yakınlık skoru ise ${(similarityStory.rest * 100).toFixed(2)}.`;
         } catch {
             // we can live without this in the event that something is broken
-        }
-
-        const storagePuzzleNumber = storage.getItem("puzzleNumber");
-        if (storagePuzzleNumber != puzzleNumber) {
-            storage.removeItem("guesses");
-            storage.removeItem("winState");
-            storage.setItem("puzzleNumber", puzzleNumber);
         }
 
         document.querySelectorAll(".dialog-close").forEach((el) => {
@@ -325,7 +384,7 @@ let Semantle = (function () {
         $('#give-up-btn').addEventListener('click', function (event) {
             if (!gameOver) {
                 if (confirm("Pes etmek istediğinize emin misiniz?")) {
-                    endGame(false, true);
+                    endGame(false, !isArchiveMode);
                 }
             }
         });
@@ -378,11 +437,13 @@ let Semantle = (function () {
                 const newEntry = [similarity, guess, percentile, guessCount];
                 guesses.push(newEntry);
 
-                const stats = getStats();
-                if (!gameOver) {
-                    stats['totalGuesses'] += 1;
+                if (!isArchiveMode) {
+                    const stats = getStats();
+                    if (!gameOver) {
+                        stats['totalGuesses'] += 1;
+                    }
+                    storage.setItem('stats', JSON.stringify(stats));
                 }
-                storage.setItem('stats', JSON.stringify(stats));
             }
             guesses.sort(function (a, b) {
                 return b[0] - a[0]
@@ -399,24 +460,44 @@ let Semantle = (function () {
 
             firstGuess = false;
             if (guess.toLowerCase() === secret && !gameOver) {
-                endGame(true, true);
+                endGame(true, !isArchiveMode);
             }
             return false;
         });
 
-        const winState = storage.getItem("winState");
-        if (winState != null) {
-            guesses = JSON.parse(storage.getItem("guesses"));
-            for (let guess of guesses) {
-                guessed.add(guess[1]);
+        if (isArchiveMode) {
+            const savedGuesses = storage.getItem(archiveKey('guesses'));
+            const savedWinState = storage.getItem(archiveKey('winState'));
+            if (savedGuesses) {
+                guesses = JSON.parse(savedGuesses);
+                for (let g of guesses) guessed.add(g[1]);
+                guessCount = guessed.size;
+                latestGuess = "";
+                updateGuesses();
             }
-            guessCount = guessed.size;
-            latestGuess = "";
-            updateGuesses();
-            if (winState != -1) {
-                endGame(winState > 0, false);
+            if (savedWinState !== null && savedWinState != -1) {
+                endGame(savedWinState > 0, false);
+            }
+        } else {
+            const storagePuzzleNumber = storage.getItem("puzzleNumber");
+            if (storagePuzzleNumber != puzzleNumber) {
+                storage.removeItem("guesses");
+                storage.removeItem("winState");
+                storage.setItem("puzzleNumber", puzzleNumber);
+            }
+            const savedWinState = storage.getItem("winState");
+            if (savedWinState != null) {
+                guesses = JSON.parse(storage.getItem("guesses"));
+                for (let g of guesses) guessed.add(g[1]);
+                guessCount = guessed.size;
+                latestGuess = "";
+                updateGuesses();
+                if (savedWinState != -1) {
+                    endGame(savedWinState > 0, false);
+                }
             }
         }
+        populateArchiveDropdown();
     }
 
     function openRules() {
@@ -496,13 +577,17 @@ let Semantle = (function () {
     }
 
     function saveGame(guessCount, winState) {
+        if (isArchiveMode) {
+            storage.setItem(archiveKey('winState'), winState);
+            storage.setItem(archiveKey('guesses'), JSON.stringify(guesses));
+            return;
+        }
         // If we are in a tab still open from yesterday, we're done here.
         // Don't save anything because we may overwrite today's game!
         let savedPuzzleNumber = storage.getItem("puzzleNumber");
         if (savedPuzzleNumber != puzzleNumber) {
-            return
+            return;
         }
-
         storage.setItem("winState", winState);
         storage.setItem("guesses", JSON.stringify(guesses));
     }
@@ -544,38 +629,45 @@ let Semantle = (function () {
     function endGame(won, countStats) {
         let stats;
 
-        stats = getStats();
-        if (countStats) {
-            const onStreak = (stats['lastEnd'] == puzzleNumber - 1);
-
-            stats['lastEnd'] = puzzleNumber;
-            if (won) {
-                if (onStreak) {
-                    stats['winStreak'] += 1;
+        if (!isArchiveMode) {
+            stats = getStats();
+            if (countStats) {
+                const onStreak = (stats['lastEnd'] == puzzleNumber - 1);
+                stats['lastEnd'] = puzzleNumber;
+                if (won) {
+                    if (onStreak) {
+                        stats['winStreak'] += 1;
+                    } else {
+                        stats['winStreak'] = 1;
+                    }
+                    stats['wins'] += 1;
                 } else {
-                    stats['winStreak'] = 1;
+                    stats['winStreak'] = 0;
+                    stats['giveups'] += 1;
                 }
-                stats['wins'] += 1;
-            } else {
-                stats['winStreak'] = 0;
-                stats['giveups'] += 1;
+                storage.setItem("stats", JSON.stringify(stats));
             }
-            storage.setItem("stats", JSON.stringify(stats));
         }
 
         $('#give-up-btn').style = "display:none;";
         $('#response').classList.add("gaveup");
         gameOver = true;
         const secretBase64 = btoa(unescape(encodeURIComponent(secret)));
+        const returnLink = isArchiveMode
+            ? ` <a href="/">Bugünkü bulmacaya dön &rarr;</a>`
+            : ' Yarın görüşmek üzere!';
         let response;
         if (won) {
-            response = `<p><b>${guesses.length}. tahminde günün sözcüğünü (${secret}) buldun!</b>. Eğer başka sözcüklerle olan benzerliği merak ediyorsan, kelime girmeye devam edebilirsin. Sonuçlarını paylaşmak istersen <a href="javascript:share();">buraya</a> tıklayabilirsin. Bugünün sözcüğüne en yakın sözcükleri görmek istersen <a href="nearby_1k?word=${secretBase64}">buraya</a> tıklayabilirsin. Yarın görüşmek üzere! </p>`
+            response = `<p><b>${guesses.length}. tahminde sözcüğü (${secret}) buldun!</b>. Eğer başka sözcüklerle olan benzerliği merak ediyorsan, kelime girmeye devam edebilirsin. Sonuçlarını paylaşmak istersen <a href="javascript:share();">buraya</a> tıklayabilirsin. Sözcüğe en yakın sözcükleri görmek istersen <a href="nearby_1k?word=${secretBase64}">buraya</a> tıklayabilirsin.${returnLink}</p>`;
         } else {
-            response = `<p><b>Pes ettin! Günün sözcüğü ${secret}</b>. Eğer başka sözcüklerle olan benzerliği merak ediyorsan, kelime girmeye devam edebilirsin. Bugünün sözcüğüne en yakın sözcükleri görmek istersen <a href="nearby_1k?word=${secretBase64}">buraya</a> tıklayabilirsin. Yarın görüşmek üzere! </p>`;
+            response = `<p><b>Pes ettin! Sözcük: ${secret}</b>. Eğer başka sözcüklerle olan benzerliği merak ediyorsan, kelime girmeye devam edebilirsin. Sözcüğe en yakın sözcükleri görmek istersen <a href="nearby_1k?word=${secretBase64}">buraya</a> tıklayabilirsin.${returnLink}</p>`;
         }
 
-        const totalGames = stats['wins'] + stats['giveups'] + stats['abandons'];
-        response += `<br/>
+        if (isArchiveMode) {
+            response += `<p><em>Arşiv modunda istatistikler güncellenmez.</em></p>`;
+        } else {
+            const totalGames = stats['wins'] + stats['giveups'] + stats['abandons'];
+            response += `<br/>
 İstatistikler: <br/>
 <table>
 <tr><th>İlk oyun:</th><td>${stats['firstPlay']}</td></tr>
@@ -588,10 +680,13 @@ let Semantle = (function () {
 <tr><th>Bugüne kadarki ortalama tahmin sayısı:</th><td>${(stats['totalGuesses'] / totalGames).toFixed(2)}</td></tr>
 </table>
 `;
+        }
 
         $('#response').innerHTML = response;
 
         if (countStats) {
+            saveGame(guesses.length, won ? 1 : 0);
+        } else if (isArchiveMode && gameOver) {
             saveGame(guesses.length, won ? 1 : 0);
         }
     }
